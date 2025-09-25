@@ -3,8 +3,11 @@ package com.fastshop.services;
 import com.fastshop.dto.ProductRequestDTO;
 import com.fastshop.dto.ProductResponseDTO;
 import com.fastshop.entities.Product;
+import com.fastshop.exceptions.DatabaseException;
+import com.fastshop.exceptions.ResourceNotFoundException;
 import com.fastshop.mappers.ProductConverter;
 import com.fastshop.repositories.ProductRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,9 +24,9 @@ public class ProductService {
         this.productConverter = productcToResponsDTO;
     }
 
-    public ProductResponseDTO getProductsById(Long id) {
+    public ProductResponseDTO getProductById(Long id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Produto não encontrado com o ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado com o ID: " + id));
         return productConverter.toResponseDTO(product);
     }
 
@@ -44,18 +47,23 @@ public class ProductService {
             Product product = productExistent.get();
             productConverter.updateEntityFromDTO(productRequestDTO, product);
             return productConverter.toResponseDTO(productRepository.save(product));
+        } else {
+            throw new ResourceNotFoundException("Produto não encontrado com o ID: " + id);
         }
-        else {
-        // Lança uma exceção ou retorna null, dependendo da sua lógica de negócio
-        throw new RuntimeException("Entidade com ID " + id + " não encontrada.");
     }
 
-    }
+   import org.springframework.dao.DataIntegrityViolationException;
 
     public void deleteById(Long id) {
         if (!productRepository.existsById(id)) {
-        throw new RuntimeException("Entidade com ID " + id + " não encontrada.");
+            throw new ResourceNotFoundException("Produto não encontrado com o ID: " + id);
         }
-        productRepository.deleteById(id);
+        try {
+            productRepository.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            throw new DatabaseException(
+                    "Violação de integridade: não é possível excluir o produto vinculado a outras entidades.");
+        }
     }
+
 }
