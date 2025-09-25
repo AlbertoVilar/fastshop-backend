@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProductDTOConverter {
 
-    public ProductRequestDTO toRequestDTO(ProductResponseDTO product) {
+    public ProductRequestDTO toRequestDTODTO(ProductResponseDTO product) {
         return ProductRequestDTO.builder()
                 .name(product.getName())
                 .description(product.getDescription())

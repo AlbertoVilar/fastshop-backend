@@ -8,33 +8,54 @@ import com.fastshop.repositories.ProductRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductService {
 
     private ProductRepository productRepository;
-    private final ProductConverter productcToResponsDTO;
+    private final ProductConverter productConverter;
 
     public ProductService(ProductRepository productRepository, ProductConverter productcToResponsDTO) {
         this.productRepository = productRepository;
-        this.productcToResponsDTO = productcToResponsDTO;
+        this.productConverter = productcToResponsDTO;
     }
 
     public ProductResponseDTO getProductsById(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado com o ID: " + id));
-        return productcToResponsDTO.toResponseDTO(product);
+        return productConverter.toResponseDTO(product);
     }
 
     public List<ProductResponseDTO> getAllProducts() {
         List<Product> result = productRepository.findAll();
-        return result.stream().map(productcToResponsDTO::toResponseDTO).toList();
+        return result.stream().map(productConverter::toResponseDTO).toList();
     }
 
     public ProductResponseDTO createProduct(ProductRequestDTO productRequestDTO) {
-        Product product = productRepository.save(productcToResponsDTO.toEntity(productRequestDTO));
-        return productcToResponsDTO.toResponseDTO(product);
+        Product product = productRepository.save(productConverter.toEntity(productRequestDTO));
+        return productConverter.toResponseDTO(product);
     }
 
+    public ProductResponseDTO updateProduct(Long id, ProductRequestDTO productRequestDTO) {
+        Optional<Product> productExistent = productRepository.findById(id);
 
+        if (productExistent.isPresent()) {
+            Product product = productExistent.get();
+            productConverter.updateEntityFromDTO(productRequestDTO, product);
+            return productConverter.toResponseDTO(productRepository.save(product));
+        }
+        else {
+        // Lança uma exceção ou retorna null, dependendo da sua lógica de negócio
+        throw new RuntimeException("Entidade com ID " + id + " não encontrada.");
+    }
+
+    }
+
+    public void deleteById(Long id) {
+        if (!productRepository.existsById(id)) {
+        throw new RuntimeException("Entidade com ID " + id + " não encontrada.");
+        }
+        productRepository.deleteById(id);
+    }
 }

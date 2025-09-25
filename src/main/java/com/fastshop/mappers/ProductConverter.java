@@ -30,4 +30,13 @@ public class ProductConverter {
                 .imageUrl(dto.getImageUrl())
                 .build();
     }
+
+    public void updateEntityFromDTO(ProductRequestDTO dto, Product product) {
+        product.setName(dto.getName());
+        product.setDescription(dto.getDescription());
+        product.setPrice(dto.getPrice());
+        product.setStock(dto.getStock());
+        product.setImageUrl(dto.getImageUrl());
+    }
+
 }
