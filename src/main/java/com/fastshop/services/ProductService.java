@@ -1,11 +1,15 @@
 package com.fastshop.services;
 
+import com.fastshop.dto.OrderRequestDTO;
+import com.fastshop.dto.OrderResponseDTO;
 import com.fastshop.dto.ProductRequestDTO;
 import com.fastshop.dto.ProductResponseDTO;
+import com.fastshop.entities.Order;
 import com.fastshop.entities.Product;
 import com.fastshop.exceptions.DatabaseException;
 import com.fastshop.exceptions.ResourceNotFoundException;
 import com.fastshop.mappers.ProductConverter;
+import com.fastshop.repositories.OrderRepository;
 import com.fastshop.repositories.ProductRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -52,8 +56,6 @@ public class ProductService {
         }
     }
 
-   import org.springframework.dao.DataIntegrityViolationException;
-
     public void deleteById(Long id) {
         if (!productRepository.existsById(id)) {
             throw new ResourceNotFoundException("Produto não encontrado com o ID: " + id);
@@ -65,5 +67,6 @@ public class ProductService {
                     "Violação de integridade: não é possível excluir o produto vinculado a outras entidades.");
         }
     }
+
 
 }
