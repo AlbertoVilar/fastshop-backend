@@ -13,5 +13,5 @@ public class CategoryResponseDTO {
     private Long id;
     private String name;
     private String description;
-    private List<ProductResponseDTO> products;
+    //private List<ProductResponseDTO> products;
 }

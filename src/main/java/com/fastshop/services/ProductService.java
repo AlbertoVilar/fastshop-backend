@@ -4,11 +4,13 @@ import com.fastshop.dto.OrderRequestDTO;
 import com.fastshop.dto.OrderResponseDTO;
 import com.fastshop.dto.ProductRequestDTO;
 import com.fastshop.dto.ProductResponseDTO;
+import com.fastshop.entities.Category;
 import com.fastshop.entities.Order;
 import com.fastshop.entities.Product;
 import com.fastshop.exceptions.DatabaseException;
 import com.fastshop.exceptions.ResourceNotFoundException;
 import com.fastshop.mappers.ProductConverter;
+import com.fastshop.repositories.CategoryRepository;
 import com.fastshop.repositories.OrderRepository;
 import com.fastshop.repositories.ProductRepository;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -21,10 +23,12 @@ import java.util.Optional;
 public class ProductService {
 
     private ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
     private final ProductConverter productConverter;
 
-    public ProductService(ProductRepository productRepository, ProductConverter productcToResponsDTO) {
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, ProductConverter productcToResponsDTO) {
         this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
         this.productConverter = productcToResponsDTO;
     }
 
@@ -40,7 +44,15 @@ public class ProductService {
     }
 
     public ProductResponseDTO createProduct(ProductRequestDTO productRequestDTO) {
-        Product product = productRepository.save(productConverter.toEntity(productRequestDTO));
+
+        if (productRequestDTO.getCategoryId() == null) {
+            throw new IllegalArgumentException("O ID da categoria não pode ser nulo.");
+        }
+
+        Category category = categoryRepository.findById(productRequestDTO.getCategoryId())
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada com o ID: " + productRequestDTO.getCategoryId()));
+        Product product = productConverter.toEntity(productRequestDTO, category);
+        product = productRepository.save(product);
         return productConverter.toResponseDTO(product);
     }
 

@@ -19,11 +19,10 @@ public class CategoryConverter {
         this.productConverter = productConverter;
     }
 
-    public Category fromDTO(CategoryRequestDTO dto, List<Product> products) {
+    public Category fromDTO(CategoryRequestDTO dto) {
         return Category.builder()
                 .name(dto.getName())
                 .description(dto.getDescription())
-                .products(products)
                 .build();
     }
 
@@ -32,10 +31,16 @@ public class CategoryConverter {
                 .id(entity.getId())
                 .name(entity.getName())
                 .description(entity.getDescription())
-                .products(entity.getProducts() == null ? List.of() :
-                    entity.getProducts().stream()
-                        .map(productConverter::toResponseDTO)
-                        .collect(Collectors.toList()))
                 .build();
+    }
+
+    public void updateEntityFromDTO(Category category, CategoryRequestDTO dto) {
+        if (dto.getName() != null) {
+            category.setName(dto.getName());
+        }
+        if (dto.getDescription() != null) {
+            category.setDescription(dto.getDescription());
+        }
+        // Se quiser atualizar produtos, adicione lógica aqui
     }
 }

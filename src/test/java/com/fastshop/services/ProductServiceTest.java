@@ -155,9 +155,15 @@ class ProductServiceTest {
                 .stock(10)
                 .build();
 
-        when(productConverter.toEntity(req)).thenReturn(produtoNovo);
+        // Ajuste para considerar a categoria ao criar produto
+        Category categoria = new Category();
+        categoria.setId(1L);
+        when(productConverter.toEntity(req, categoria)).thenReturn(produtoNovo);
         when(productRepository.save(produtoNovo)).thenReturn(produtoNovo);
         when(productConverter.toResponseDTO(produtoNovo)).thenReturn(produtoDTO);
+        // Mock do repository para buscar a categoria
+        CategoryRepository categoryRepository = mock(CategoryRepository.class);
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(categoria));
 
         ProductResponseDTO resultado = productService.createProduct(req);
 

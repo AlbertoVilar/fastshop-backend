@@ -19,4 +19,5 @@ public class ProductResponseDTO {
     private String imageUrl;
     private Long categoryId;
     private String categoryName;
+    // private CategoryResponseDTO category; // Comentado, pois categoryName já é suficiente
 }
