@@ -18,7 +18,10 @@ public class Customer {
 
     private String name;
     private String email;
-    private String address;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "address_id")
+    private Address address;
 
     // Getters and Setters
 }
