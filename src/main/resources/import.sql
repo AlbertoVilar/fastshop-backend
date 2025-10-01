@@ -5,14 +5,21 @@ INSERT INTO categories (id, name, description) VALUES (3, 'Vestuário', 'Camiset
 INSERT INTO categories (id, name, description) VALUES (4, 'Livros', 'Romances, livros técnicos e literatura infantil');
 INSERT INTO categories (id, name, description) VALUES (5, 'Móveis', 'Sofás, camas, mesas e cadeiras');
 
+-- Endereços
+INSERT INTO addresses (street, neighborhood, city, state, zip_code, country) VALUES ('Rua das Flores', 'Centro', 'São Paulo', 'SP', '01001-000', 'Brasil');
+INSERT INTO addresses (street, neighborhood, city, state, zip_code, country) VALUES ('Avenida Brasil', 'Jardins', 'Rio de Janeiro', 'RJ', '22041-001', 'Brasil');
+
 -- Produtos depois
 INSERT INTO products (name, description, price, stock, image_url, category_id) VALUES ('Notebook Dell', 'Notebook i7 16GB RAM SSD 512GB', 4500.00, 10, 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8', 1);
 INSERT INTO products (name, description, price, stock, image_url, category_id) VALUES ('Smartphone Samsung', 'Galaxy S23 Ultra 256GB', 5200.00, 15, 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9', 1);
 INSERT INTO products (name, description, price, stock, image_url, category_id) VALUES ('TV LG 55"', 'Smart TV 4K UHD com AI ThinQ', 3200.00, 8, 'https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04', 1);
 INSERT INTO products (name, description, price, stock, image_url, category_id) VALUES ('Fone JBL', 'Fone Bluetooth com cancelamento de ruído', 600.00, 25, 'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf', 1);
 
--- Cliente
-INSERT INTO customers (id, name, email, address) VALUES (1, 'João da Silva', 'joao@email.com', 'Rua das Flores, 123');
+-- Clientes
+-- Os address_id devem ser ajustados conforme o id gerado automaticamente pelo banco
+-- Exemplo: se o banco gerar 1 e 2, mantenha como está. Se não, ajuste após rodar o seed.
+INSERT INTO customers (id, name, email, address_id) VALUES (1, 'João da Silva', 'joao@email.com', 1);
+INSERT INTO customers (id, name, email, address_id) VALUES (2, 'Maria Oliveira', 'maria@email.com', 2);
 
 -- Pedido (Order)
 INSERT INTO orders (customer_id, status, created_at, total) VALUES (1, 'PAID', '2025-09-25T10:00:00', 4500.00);

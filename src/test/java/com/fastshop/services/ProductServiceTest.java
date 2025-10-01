@@ -3,9 +3,11 @@ package com.fastshop.services;
 import com.fastshop.dto.ProductRequestDTO;
 import com.fastshop.dto.ProductResponseDTO;
 import com.fastshop.entities.Product;
+import com.fastshop.entities.Category;
 import com.fastshop.exceptions.ResourceNotFoundException;
 import com.fastshop.mappers.ProductConverter;
 import com.fastshop.repositories.ProductRepository;
+import com.fastshop.repositories.CategoryRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,6 +27,9 @@ class ProductServiceTest {
 
     @Mock // Mock do repositório (simula acesso ao banco)
     private ProductRepository productRepository;
+
+    @Mock // Mock do repositório de categoria
+    private CategoryRepository categoryRepository;
 
     @Mock // Mock do conversor (simula conversões DTO <-> Entidade)
     private ProductConverter productConverter;
@@ -142,6 +147,7 @@ class ProductServiceTest {
                 .price(BigDecimal.valueOf(200.00))
                 .stock(10)
                 .imageUrl("http://imagem.com/produto.png")
+                .categoryId(1L)
                 .build();
 
         Product produtoNovo = new Product();
@@ -158,12 +164,10 @@ class ProductServiceTest {
         // Ajuste para considerar a categoria ao criar produto
         Category categoria = new Category();
         categoria.setId(1L);
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(categoria));
         when(productConverter.toEntity(req, categoria)).thenReturn(produtoNovo);
         when(productRepository.save(produtoNovo)).thenReturn(produtoNovo);
         when(productConverter.toResponseDTO(produtoNovo)).thenReturn(produtoDTO);
-        // Mock do repository para buscar a categoria
-        CategoryRepository categoryRepository = mock(CategoryRepository.class);
-        when(categoryRepository.findById(1L)).thenReturn(Optional.of(categoria));
 
         ProductResponseDTO resultado = productService.createProduct(req);
 
