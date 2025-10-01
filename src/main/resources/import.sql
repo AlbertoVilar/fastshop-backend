@@ -15,11 +15,13 @@ INSERT INTO products (name, description, price, stock, image_url, category_id) V
 INSERT INTO products (name, description, price, stock, image_url, category_id) VALUES ('TV LG 55"', 'Smart TV 4K UHD com AI ThinQ', 3200.00, 8, 'https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04', 1);
 INSERT INTO products (name, description, price, stock, image_url, category_id) VALUES ('Fone JBL', 'Fone Bluetooth com cancelamento de ruído', 600.00, 25, 'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf', 1);
 
--- Clientes
--- Os address_id devem ser ajustados conforme o id gerado automaticamente pelo banco
--- Exemplo: se o banco gerar 1 e 2, mantenha como está. Se não, ajuste após rodar o seed.
-INSERT INTO customers (id, name, email, address_id) VALUES (1, 'João da Silva', 'joao@email.com', 1);
-INSERT INTO customers (id, name, email, address_id) VALUES (2, 'Maria Oliveira', 'maria@email.com', 2);
+-- Clientes (sem address_id)
+INSERT INTO customers (name, email) VALUES ('João da Silva', 'joao@email.com');
+INSERT INTO customers (name, email) VALUES ('Maria Oliveira', 'maria@email.com');
+
+-- Atualize os endereços para associar ao cliente correto
+UPDATE addresses SET customer_id = 1 WHERE id = 1;
+UPDATE addresses SET customer_id = 2 WHERE id = 2;
 
 -- Pedido (Order)
 INSERT INTO orders (customer_id, status, created_at, total) VALUES (1, 'PAID', '2025-09-25T10:00:00', 4500.00);

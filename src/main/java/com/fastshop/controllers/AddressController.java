@@ -39,8 +39,7 @@ public class AddressController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AddressResponseDTO>> findAll() {
-        List<AddressResponseDTO> addresses = addressService.searchAllAddresses();
-          return ResponseEntity.ok(addresses);
+    public List<AddressResponseDTO> findAll() {
+        return addressService.searchAllAddresses();
     }
 }

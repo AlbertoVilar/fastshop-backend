@@ -35,4 +35,8 @@ public class Address {
 
     @NotBlank(message = "País não pode ser vazio")
     private String country;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
 }
