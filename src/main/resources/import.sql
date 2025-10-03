@@ -29,3 +29,6 @@ INSERT INTO orders (customer_id, status, created_at, total) VALUES (1, 'PAID', '
 INSERT INTO order_items (order_id, product_id, quantity, unit_price) VALUES (1, 1, 1, 4500.00);
 INSERT INTO orders (customer_id, status, created_at, total) VALUES (1, 'PENDING', '2025-09-25T11:00:00', 5200.00);
 INSERT INTO order_items (order_id, product_id, quantity, unit_price) VALUES (2, 2, 1, 5200.00);
+
+-- Carrinho (Cart) para testes de CartItem
+-- (Removido para evitar conflito de chave única ao criar pelo Postman)

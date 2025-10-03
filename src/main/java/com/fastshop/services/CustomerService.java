@@ -29,12 +29,14 @@ public class CustomerService {
         this.repository = repository;
     }
     public CustomerResponseDTO creatCustomer(CustomerRequestDTO requestDTO) {
+
         List<Address> addresses = addressRepository.findAllById(requestDTO.getAddressIds());
         if (addresses.size() != requestDTO.getAddressIds().size()) {
             throw new IllegalArgumentException("Um ou mais endereços não foram encontrados.");
         }
         var customer = converter.fromDTO(requestDTO, addresses);
         // Setar o customer em cada address para manter o relacionamento bidirecional
+
         for (Address address : addresses) {
             address.setCustomer(customer);
         }
