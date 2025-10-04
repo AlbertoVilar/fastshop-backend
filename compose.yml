@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  # Serviço do Banco de Dados PostgreSQL
+  db:
+    image: postgres:16-alpine
+    container_name: fastshop-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: fastuser
+      POSTGRES_PASSWORD: fastpassword
+      POSTGRES_DB: fastshop_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Serviço da Aplicação Spring Boot (FastShop)
+  app:
+    container_name: fastshop-app
+    # Usa o Dockerfile no diretório atual para construir a imagem
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      # Configuração para o Spring se conectar ao serviço 'db'
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/fastshop_db
+      SPRING_DATASOURCE_USERNAME: fastuser
+      SPRING_DATASOURCE_PASSWORD: fastpassword
+      SPRING_PROFILES_ACTIVE: prod
+    depends_on:
+      - db
+    restart: on-failure
+
+# Volume para persistência
+volumes:
+  postgres_data:
