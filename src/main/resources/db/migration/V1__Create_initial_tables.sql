@@ -27,7 +27,12 @@ CREATE TABLE products (
 CREATE TABLE customers (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE
+    email VARCHAR(255) NOT NULL UNIQUE,
+    birth_date DATE,
+    phone VARCHAR(30),
+    cpf_or_cnpj VARCHAR(30),
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP
 );
 
 -- Tabela de Endereços (Relacionada a Customer)

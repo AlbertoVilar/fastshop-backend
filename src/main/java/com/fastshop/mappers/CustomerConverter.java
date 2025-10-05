@@ -23,6 +23,9 @@ public class CustomerConverter {
        return Customer.builder()
                 .name(dto.getName())
                 .email(dto.getEmail())
+                .birthDate(dto.getBirthDate())
+                .phone(dto.getPhone())
+                .cpfOrCnpj(dto.getCpfOrCnpj())
                 .addresses(addresses)
                 .build();
     }
@@ -30,6 +33,9 @@ public class CustomerConverter {
     public void updateEntityFromDTO(CustomerRequestDTO dto, Customer entity, List<Address> addresses) {
         entity.setName(dto.getName());
         entity.setEmail(dto.getEmail());
+        entity.setBirthDate(dto.getBirthDate());
+        entity.setPhone(dto.getPhone());
+        entity.setCpfOrCnpj(dto.getCpfOrCnpj());
 
         // Remove endereços que não estão mais na lista
         entity.getAddresses().removeIf(address ->
@@ -50,9 +56,13 @@ public class CustomerConverter {
                 .id(entity.getId())
                 .name(entity.getName())
                 .email(entity.getEmail())
+                .birthDate(entity.getBirthDate())
+                .phone(entity.getPhone())
+                .cpfOrCnpj(entity.getCpfOrCnpj())
+                .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
                 .addresses(entity.getAddresses().stream()
                         .map(addressConverter::toResponseDTO).toList())
-
                 .build();
     }
 }
