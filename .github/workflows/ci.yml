@@ -1,0 +1,33 @@
+name: FastShop CI
+
+on:
+  push:
+    branches: [ "main", "develop", "feature/**" ] # Roda o workflow quando houver um push para essas branches
+  pull_request:
+    branches: [ "main", "develop" ] # Roda o workflow quando um Pull Request for aberto para essas branches
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest # O sistema operacional da máquina virtual onde o job será executado
+
+    steps:
+      - name: Checkout do Código # Passo 1: Pega o seu código do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 21 # Passo 2: Instala o Java 21 no runner
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven' # Configura o cache do Maven para builds mais rápidos
+
+      - name: Construir e Testar com Maven # Passo 3: Executa o build do Maven e os testes
+        run: mvn -B package --file pom.xml
+        # -B: --batch-mode (não interativo)
+        # package: Compila o código, roda os testes e empacota (JAR/WAR)
+        # --file pom.xml: Especifica o arquivo pom.xml
+
+      - name: Exibir Log de Testes # Passo 4 (Opcional): Exibe um resumo dos resultados dos testes
+        run: cat target/surefire-reports/TEST-*.xml || true
+        # '|| true' garante que o passo não falhe se o arquivo não existir ou o cat falhar por algum motivo
+        # Surefire é o plugin do Maven que roda os testes e gera relatórios XML
