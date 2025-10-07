@@ -23,5 +23,15 @@ INSERT INTO users (id, username, password) VALUES (
 INSERT INTO user_roles (user_id, role_id) VALUES (1, 1);
 INSERT INTO user_roles (user_id, role_id) VALUES (2, 2);
 
+-- Usuario: maria@email.com | Senha: 132747 (BCrypt)
+INSERT INTO users (id, username, password) VALUES (
+  3,
+  'maria@email.com',
+  '$2a$10$QwS6UVcNoS5wSpURmkJbS.Wd4fEclOaClMQKaQ9JjOkCI8ZtaTGVm'
+);
+
+INSERT INTO user_roles (user_id, role_id) VALUES (3, 2);
+
+
 -- Removido: inserts de categorias/produtos para evitar conflito
 -- com import.sql (executado pelo Hibernate em create-drop).

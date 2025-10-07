@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### FastShop UI local (não versionar HTML/CSS de testes)
+src/main/resources/static/**/*.html
+src/main/resources/static/**/*.css

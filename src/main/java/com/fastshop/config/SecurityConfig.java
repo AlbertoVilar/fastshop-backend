@@ -82,7 +82,10 @@ public class SecurityConfig {
                         // Demais rotas requerem autenticação
                         .anyRequest().authenticated()
                 )
-                .exceptionHandling(ex -> ex.authenticationEntryPoint(authenticationEntryPoint()));
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(authenticationEntryPoint())
+                        .accessDeniedHandler(accessDeniedHandler())
+                );
         // Configura provider de autenticação baseado no UserDetailsService e PasswordEncoder (BCrypt)
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
@@ -105,6 +108,11 @@ public class SecurityConfig {
     @Bean
     public AuthenticationEntryPoint authenticationEntryPoint() {
         return new CustomAuthenticationEntryPoint();
+    }
+
+    @Bean
+    public org.springframework.security.web.access.AccessDeniedHandler accessDeniedHandler() {
+        return new com.fastshop.security.CustomAccessDeniedHandler();
     }
 
     @Bean
