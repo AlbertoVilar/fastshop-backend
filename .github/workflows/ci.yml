@@ -31,3 +31,17 @@ jobs:
         run: cat target/surefire-reports/TEST-*.xml || true
         # '|| true' garante que o passo não falhe se o arquivo não existir ou o cat falhar por algum motivo
         # Surefire é o plugin do Maven que roda os testes e gera relatórios XML
+
+      # Construir Imagem Docker (sem push)
+      - name: Configurar Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Construir Imagem Docker
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          # Tag local para identificação do build do CI
+          tags: fastshop:ci-${{ github.sha }}
+          # Apenas construir e carregar no daemon local (sem push para registry)
+          load: true
