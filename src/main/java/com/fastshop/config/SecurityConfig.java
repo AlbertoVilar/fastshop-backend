@@ -23,6 +23,7 @@ import com.fastshop.security.jwt.JwtAuthenticationFilter;
 import com.fastshop.security.CustomAuthenticationEntryPoint;
 import com.fastshop.services.TokenService;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 
 @Configuration
 @EnableWebSecurity
@@ -39,6 +40,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                         // Rotas públicas
+                        // Página inicial e recursos estáticos (CSS/JS/imagens)
+                        .requestMatchers("/", "/index.html").permitAll()
+                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                        .requestMatchers("/favicon.ico").permitAll()
                         .requestMatchers("/public/**").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
