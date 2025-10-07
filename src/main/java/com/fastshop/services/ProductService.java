@@ -15,6 +15,7 @@ import com.fastshop.repositories.OrderRepository;
 import com.fastshop.repositories.ProductRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,17 +33,20 @@ public class ProductService {
         this.productConverter = productcToResponsDTO;
     }
 
+    @Transactional(readOnly = true)
     public ProductResponseDTO getProductById(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado com o ID: " + id));
         return productConverter.toResponseDTO(product);
     }
 
+    @Transactional(readOnly = true)
     public List<ProductResponseDTO> getAllProducts() {
         List<Product> result = productRepository.findAll();
         return result.stream().map(productConverter::toResponseDTO).toList();
     }
 
+    @Transactional
     public ProductResponseDTO createProduct(ProductRequestDTO productRequestDTO) {
 
         if (productRequestDTO.getCategoryId() == null) {
@@ -56,6 +60,7 @@ public class ProductService {
         return productConverter.toResponseDTO(product);
     }
 
+    @Transactional
     public ProductResponseDTO updateProduct(Long id, ProductRequestDTO productRequestDTO) {
         Optional<Product> productExistent = productRepository.findById(id);
 
@@ -68,6 +73,7 @@ public class ProductService {
         }
     }
 
+    @Transactional
     public void deleteById(Long id) {
         if (!productRepository.existsById(id)) {
             throw new ResourceNotFoundException("Produto não encontrado com o ID: " + id);

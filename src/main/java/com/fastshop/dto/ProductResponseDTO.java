@@ -14,7 +14,7 @@ public class ProductResponseDTO {
     private Long id;
     private String name;
     private String description;
-    private BigDecimal price;
+    private BigDecimal price; // representa o unitPrice persistido
     private Integer stock;
     private String imageUrl;
     private Long categoryId;

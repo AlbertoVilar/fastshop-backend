@@ -28,6 +28,13 @@ services:
       SPRING_DATASOURCE_USERNAME: fastuser
       SPRING_DATASOURCE_PASSWORD: fastpassword
       SPRING_PROFILES_ACTIVE: prod
+      # JWT configuration (required by TokenService)
+      JWT_SECRET: fastshop-super-secret-key-please-change-0123456789
+      JWT_EXPIRATION: 3600000
+      # Admin password reset (optional; set to true to enable)
+      RESET_ADMIN_PASSWORD: "true"
+      RESET_ADMIN_USERNAME: "albertovilar1@gmail.com"
+      RESET_ADMIN_PLAIN_PASSWORD: "132747"
     depends_on:
       - db
     restart: on-failure

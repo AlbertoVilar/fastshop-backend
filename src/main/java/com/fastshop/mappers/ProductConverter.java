@@ -15,7 +15,7 @@ public class ProductConverter {
                 .id(product.getId())
                 .name(product.getName())
                 .description(product.getDescription())
-                .price(product.getPrice())
+                .price(product.getUnitPrice() != null ? product.getUnitPrice() : product.getPrice())
                 .stock(product.getStock())
                 .imageUrl(product.getImageUrl())
                 .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
@@ -29,6 +29,7 @@ public class ProductConverter {
                 .name(dto.getName())
                 .description(dto.getDescription())
                 .price(dto.getPrice())
+                .unitPrice(dto.getPrice())
                 .stock(dto.getStock())
                 .imageUrl(dto.getImageUrl())
                 .category(category)
@@ -39,6 +40,7 @@ public class ProductConverter {
         product.setName(dto.getName());
         product.setDescription(dto.getDescription());
         product.setPrice(dto.getPrice());
+        product.setUnitPrice(dto.getPrice());
         product.setStock(dto.getStock());
         product.setImageUrl(dto.getImageUrl());
     }
