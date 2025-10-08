@@ -18,9 +18,8 @@ services:
   # Serviço da Aplicação Spring Boot (FastShop)
   app:
     container_name: fastshop-app
-    # Usar a imagem publicada no Docker Hub
-    image: albertovilar/fastshop-backend:latest
-    # build: . # Removido/comentado para usar a imagem do Docker Hub
+    # Usar build local ao invés da imagem do Docker Hub
+    build: .
     ports:
       - "8080:8080"
     environment:

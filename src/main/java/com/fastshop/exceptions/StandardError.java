@@ -1,5 +1,7 @@
 package com.fastshop.exceptions;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +17,7 @@ public class StandardError {
     private String error;
     private String message;
     private String path;
+    private List<FieldMessage> errors;
 
 
 }

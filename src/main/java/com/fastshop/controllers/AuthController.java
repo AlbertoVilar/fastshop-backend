@@ -3,6 +3,7 @@ package com.fastshop.controllers;
 import com.fastshop.dto.AuthRequestDTO;
 import com.fastshop.dto.AuthResponseDTO;
 import com.fastshop.services.AuthService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +18,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDTO> login(@RequestBody AuthRequestDTO request) {
+    public ResponseEntity<AuthResponseDTO> login(@RequestBody @Valid AuthRequestDTO request) {
         var response = authService.authenticate(request);
         return ResponseEntity.ok(response);
     }

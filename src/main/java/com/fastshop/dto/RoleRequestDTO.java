@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
 
 @Getter
 @Setter
@@ -12,5 +13,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class RoleRequestDTO {
+    @NotBlank(message = "Authority não pode ser vazia")
     private String authority; // ex: "ROLE_ADMIN"
 }

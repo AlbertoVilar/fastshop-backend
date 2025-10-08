@@ -3,6 +3,7 @@ package com.fastshop.controllers;
 import com.fastshop.dto.AddressRequestDTO;
 import com.fastshop.dto.AddressResponseDTO;
 import com.fastshop.services.AddressService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -18,12 +19,12 @@ public class AddressController {
 
     // CRUD endpoints apenas com assinatura
     @PostMapping
-    public AddressResponseDTO create(@RequestBody AddressRequestDTO dto) {
+    public AddressResponseDTO create(@RequestBody @Valid AddressRequestDTO dto) {
         return addressService.createAddress(dto);
     }
 
     @PutMapping("/{id}")
-    public AddressResponseDTO update(@PathVariable Long id, @RequestBody AddressRequestDTO dto) {
+    public AddressResponseDTO update(@PathVariable Long id, @RequestBody @Valid AddressRequestDTO dto) {
         return addressService.update(id, dto);
     }
 
