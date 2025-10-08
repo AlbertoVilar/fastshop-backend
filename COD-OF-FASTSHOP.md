@@ -39,6 +39,42 @@ Comandos (Windows):
 - Rodar testes: `mvnw.cmd test`
 - Build: `mvnw.cmd clean package`
 
+### Docker Compose
+Para executar com Docker Compose (produção):
+
+```bash
+docker compose up -d
+```
+
+Serviços:
+- `db`: Postgres 16 com volume persistente `postgres_data`.
+- `app`: imagem `albertovilar/fastshop-backend:latest`, porta `8080`, perfil `prod`, variáveis JWT e credenciais do DB.
+
+Healthcheck do `app`:
+```yaml
+healthcheck:
+  test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+  interval: 30s
+  timeout: 10s
+  retries: 5
+  start_period: 60s
+```
+
+Caso a imagem não tenha `curl`, usar:
+```yaml
+healthcheck:
+  test: ["CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health || exit 1"]
+  interval: 30s
+  timeout: 10s
+  retries: 5
+  start_period: 60s
+```
+
+Verificar estado:
+- `docker ps` (STATUS deve ficar `healthy`).
+- `docker compose logs app --tail=200`.
+- `http://localhost:8080/actuator/health`.
+
 ## Configuração de Testes (H2)
 Arquivo: `src/test/resources/application-test.properties`
 - `spring.datasource.url=jdbc:h2:mem:fastshopdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE`

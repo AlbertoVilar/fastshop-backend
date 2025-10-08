@@ -131,12 +131,38 @@ Nota: constraints e mapeamentos detalhados constam nos arquivos de entidade e na
 - `Dockerfile` com multi‑stage: builder Maven (temurin 21) e runtime JRE (temurin 21). Gera `app.jar` e usa `ENTRYPOINT ["java","-jar","app.jar"]`.
 - `compose.yml`:
   - Serviço `db` (Postgres 16) com volume persistente.
-  - Serviço `app` builda a imagem, expõe `8080`, configura env (`SPRING_PROFILES_ACTIVE=prod`, `JWT_SECRET`, `JWT_EXPIRATION`, credenciais do DB) e depende de `db`.
+  - Serviço `app` usa a imagem publicada `albertovilar/fastshop-backend:latest`, expõe `8080`, configura env (`SPRING_PROFILES_ACTIVE=prod`, `JWT_SECRET`, `JWT_EXPIRATION`, credenciais do DB), depende de `db` e possui `healthcheck` via Actuator.
 
 - Imagem publicada no Docker Hub: `albertovilar/fastshop-backend` com tags `latest` e `${{ github.sha }}`.
 - Exemplos:
   - Pull: `docker pull albertovilar/fastshop-backend:latest`
   - Run: `docker run -p 8080:8080 -e SPRING_PROFILES_ACTIVE=prod -e JWT_SECRET=changeme -e JWT_EXPIRATION=86400000 -e SPRING_DATASOURCE_URL=jdbc:postgresql://host:5432/fastshop -e SPRING_DATASOURCE_USERNAME=postgres -e SPRING_DATASOURCE_PASSWORD=postgres albertovilar/fastshop-backend:latest`
+
+### Compose — Healthcheck
+Exemplo de `healthcheck` no serviço `app` para monitoramento automático:
+
+```yaml
+services:
+  app:
+    image: albertovilar/fastshop-backend:latest
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+```
+
+Observação: se a imagem não possuir `curl`, usar `CMD-SHELL` com `wget`:
+
+```yaml
+healthcheck:
+  test: ["CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health || exit 1"]
+  interval: 30s
+  timeout: 10s
+  retries: 5
+  start_period: 60s
+```
 
 ## CI (Integração Contínua)
 - Workflow em `.github/workflows/ci.yml`:
