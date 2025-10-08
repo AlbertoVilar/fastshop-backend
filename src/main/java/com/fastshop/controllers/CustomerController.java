@@ -2,6 +2,7 @@ package com.fastshop.controllers;
 
 import com.fastshop.dto.CustomerRequestDTO;
 import com.fastshop.services.CustomerService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +18,13 @@ public class CustomerController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createCustomer(@RequestBody CustomerRequestDTO requestDTO) {
+    public ResponseEntity<?> createCustomer(@RequestBody @Valid CustomerRequestDTO requestDTO) {
         var response = customerService.creatCustomer(requestDTO);
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateCustomer(@PathVariable Long id, @RequestBody CustomerRequestDTO requestDTO) {
+    public ResponseEntity<?> updateCustomer(@PathVariable Long id, @RequestBody @Valid CustomerRequestDTO requestDTO) {
         var response = customerService.updateCustomer(id, requestDTO);
         return ResponseEntity.ok(response);
     }

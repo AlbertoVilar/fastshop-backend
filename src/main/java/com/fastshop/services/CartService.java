@@ -72,6 +72,22 @@ public class CartService {
         // 1. Busque o Cart (CartRepository)
         var cart = cartRepository.findById(cartId)
                 .orElseThrow(() -> new ResourceNotFoundException("Carrinho não encontrado com o ID: " + cartId));
+        // 1.1. Verificar propriedade: usuário autenticado deve ser o dono do carrinho
+        // Obtém o username (email) do contexto de segurança
+        var authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+            // Buscar customer pelo email e comparar com o dono do carrinho
+            var maybeCustomer = customerRepository.findByEmail(username);
+            if (maybeCustomer.isPresent()) {
+                var currentCustomer = maybeCustomer.get();
+                var owner = cart.getCustomer();
+                if (owner != null && !owner.getId().equals(currentCustomer.getId())) {
+                    // Usuário autenticado não é o dono do carrinho
+                    throw new org.springframework.security.access.AccessDeniedException("Você não possui permissão para acessar este recurso");
+                }
+            }
+        }
         // 2. Busque o Product (ProductRepository)
         var product = productRepository.findById(dto.getProductId())
                 .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado com o ID: " + dto.getProductId()));

@@ -6,6 +6,7 @@ import com.fastshop.entities.Customer;
 import com.fastshop.entities.Order;
 import com.fastshop.entities.OrderItem;
 import com.fastshop.services.OrderService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -32,7 +33,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<OrderResponseDTO> createOrder(@RequestBody OrderRequestDTO orderRequestDTO) {
+    public ResponseEntity<OrderResponseDTO> createOrder(@RequestBody @Valid OrderRequestDTO orderRequestDTO) {
         OrderResponseDTO responseDTO = orderService.createOrder(orderRequestDTO);
         return ResponseEntity.status(201).body(responseDTO);
     }
@@ -40,7 +41,7 @@ public class OrderController {
     @PutMapping("/{id}")
     public ResponseEntity<OrderResponseDTO> updateOrder(
             @PathVariable Long id,
-            @RequestBody OrderRequestDTO orderRequestDTO) {
+            @RequestBody @Valid OrderRequestDTO orderRequestDTO) {
         OrderResponseDTO responseDTO = orderService.updateOrder(id, orderRequestDTO);
         return ResponseEntity.ok(responseDTO);
     }

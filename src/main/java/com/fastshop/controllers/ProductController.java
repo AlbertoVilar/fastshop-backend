@@ -4,6 +4,7 @@ import com.fastshop.dto.ProductRequestDTO;
 import com.fastshop.dto.ProductResponseDTO;
 import com.fastshop.mappers.ProductDTOConverter;
 import com.fastshop.services.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,14 +36,19 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductResponseDTO> createProduct(@RequestBody ProductRequestDTO requestDTO) {
+    public ResponseEntity<ProductResponseDTO> createProduct(@RequestBody @Valid ProductRequestDTO requestDTO) {
         ProductResponseDTO responseDTO = productService.createProduct(requestDTO);
-        return ResponseEntity.ok(responseDTO);
+        java.net.URI location = org.springframework.web.servlet.support.ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(responseDTO.getId())
+                .toUri();
+        return ResponseEntity.created(location).body(responseDTO);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponseDTO> updateProduct(@PathVariable Long id,
-                                                            @RequestBody ProductRequestDTO productRequestDTO) {
+                                                            @RequestBody @Valid ProductRequestDTO productRequestDTO) {
         ProductResponseDTO responseDTO = productService.updateProduct(id, productRequestDTO);
 
         return ResponseEntity.ok(responseDTO);

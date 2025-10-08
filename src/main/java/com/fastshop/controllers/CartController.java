@@ -4,6 +4,7 @@ import com.fastshop.dto.CartItemRequestDTO;
 import com.fastshop.dto.CartRequestDTO;
 import com.fastshop.dto.CartResponseDTO;
 import com.fastshop.services.CartService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -22,7 +23,7 @@ public class CartController {
     }
 
     @PostMapping
-    public ResponseEntity<CartResponseDTO> create(@RequestBody CartRequestDTO dto) {
+    public ResponseEntity<CartResponseDTO> create(@RequestBody @Valid CartRequestDTO dto) {
         CartResponseDTO createdCart = cartService.createCart(dto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
@@ -37,7 +38,7 @@ public class CartController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CartResponseDTO> update(@PathVariable Long id, @RequestBody CartRequestDTO dto) {
+    public ResponseEntity<CartResponseDTO> update(@PathVariable Long id, @RequestBody @Valid CartRequestDTO dto) {
         return ResponseEntity.ok(cartService.update(id, dto));
     }
 
@@ -53,7 +54,7 @@ public class CartController {
     }
 
     @PostMapping("/{cartId}/items")
-    public ResponseEntity<CartResponseDTO> addItemToCart(@PathVariable Long cartId, @RequestBody CartItemRequestDTO dto) {
+    public ResponseEntity<CartResponseDTO> addItemToCart(@PathVariable Long cartId, @RequestBody @Valid CartItemRequestDTO dto) {
         return ResponseEntity.ok(cartService.addItemToCart(cartId, dto));
     }
 
