@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Serviço do Banco de Dados PostgreSQL
   db:
@@ -18,8 +16,7 @@ services:
   # Serviço da Aplicação Spring Boot (FastShop)
   app:
     container_name: fastshop-app
-    # Usar build local ao invés da imagem do Docker Hub
-    build: .
+    image: albertovilar/fastshop-backend:latest
     ports:
       - "8080:8080"
     environment:
@@ -38,6 +35,12 @@ services:
     depends_on:
       - db
     restart: on-failure
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
 
 # Volume para persistência
 volumes:
