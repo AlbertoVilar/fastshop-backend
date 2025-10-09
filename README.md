@@ -1,4 +1,4 @@
-# Fastshop Backend
+# Fastshop Backend [![CI](https://github.com/AlbertoVilar/fastshop-backend/actions/workflows/ci.yml/badge.svg)](https://github.com/AlbertoVilar/fastshop-backend/actions/workflows/ci.yml)
 
 Sistema backend em Java/Spring Boot para o projeto Fastshop. Foca em APIs REST com segurança, persistência no PostgreSQL, migrações com Flyway, observabilidade via Actuator e execução containerizada com Docker e Docker Compose.
 
@@ -154,6 +154,9 @@ Projeto educacional/pessoal. Ajuste conforme sua política de licenciamento.
   - `Authorization: Bearer <token>` em um `GET /orders/{id}` autenticado.
   - Exemplo de validação (HTTP 422) com payload de erro contendo `errors`.
 - Sugestão de nomes: `docs/login-jwt.png`, `docs/orders-auth.png`, `docs/validation-422.png`.
-- Inclua uma coleção Postman exportada em `docs/Fastshop.postman_collection.json` e um ambiente `docs/Fastshop.postman_environment.json` com variáveis:
-  - `baseUrl`: `http://localhost:8080`
-  - `jwt`: token atualizado após login.
+- Coleção Postman: `docs/Fastshop.postman_collection.json`
+- Ambiente Postman: `docs/Fastshop.postman_environment.json` (variáveis: `baseUrl`, `jwt`).
+- Como usar:
+  - Importe a coleção e o ambiente no Postman/Insomnia.
+  - Execute `Auth - Login (Admin)` para obter o `accessToken` e popular `jwt` automaticamente.
+  - Chame endpoints protegidos com o ambiente ativo (header `Authorization` já parametrizado).
