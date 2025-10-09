@@ -35,6 +35,46 @@ Compose principal (`compose.yml`):
 - Healthcheck do app: `wget -qO- http://localhost:8080/actuator/health`.
 - Reinício: `restart: on-failure` para o app e `restart: always` para o db.
 
+## Endpoints Principais
+- Autenticação
+  - `POST /auth/login` — body exemplo:
+    ```json
+    {"username":"albertovilar1@gmail.com","password":"132747"}
+    ```
+    - Resposta: `200 OK` com `accessToken` (JWT). Use `Authorization: Bearer <token>` nas chamadas autenticadas.
+- Produtos (`/products`)
+  - `GET /products` — lista produtos (público)
+  - `GET /products/{id}` — produto por id (público)
+  - `POST /products` — criar produto (ROLE_ADMIN)
+  - `PUT /products/{id}` — atualizar (ROLE_ADMIN)
+  - `DELETE /products/{id}` — remover (ROLE_ADMIN)
+- Categorias (`/categories`)
+  - `GET /categories` — lista categorias (público)
+  - `GET /categories/{id}` — categoria por id (público)
+  - `POST /categories` — criar categoria (ROLE_ADMIN)
+  - `PUT /categories/{id}` — atualizar (ROLE_ADMIN)
+  - `DELETE /categories/{id}` — remover (ROLE_ADMIN)
+- Clientes (`/customers`)
+  - `POST /customers` — cadastro (público)
+  - `GET /customers` — listar clientes (autenticado)
+  - `GET /customers/{id}` — cliente por id (autenticado)
+  - `PUT /customers/{id}` — atualizar (autenticado)
+  - `DELETE /customers/{id}` — remover (autenticado)
+- Carrinho (`/carts`)
+  - `POST /carts` — criar carrinho (público)
+  - `GET /carts` — listar carrinhos (público)
+  - `GET /carts/{id}` — carrinho por id (público)
+  - `PUT /carts/{id}` — atualizar carrinho (público)
+  - `DELETE /carts/{id}` — remover carrinho (público)
+  - `POST /carts/{cartId}/items` — adicionar item ao carrinho (público)
+  - `DELETE /carts/{cartId}/items/{productId}` — remover item do carrinho (público)
+- Pedidos (`/orders`)
+  - `POST /orders` — criar pedido (autenticado)
+  - `GET /orders` — listar pedidos (ROLE_ADMIN)
+  - `GET /orders/{id}` — pedido por id (autenticado)
+  - `PUT /orders/{id}` — atualizar pedido (ROLE_ADMIN)
+  - `DELETE /orders/{id}` — remover pedido (ROLE_ADMIN)
+
 ## Configuração (variáveis de ambiente)
 Os principais parâmetros são configuráveis via variáveis de ambiente:
 - `SPRING_DATASOURCE_URL`: ex. `jdbc:postgresql://db:5432/fastshop_db`
@@ -48,6 +88,13 @@ Os principais parâmetros são configuráveis via variáveis de ambiente:
 - `RESET_ADMIN_PLAIN_PASSWORD`: nova senha em texto plano (opcional)
 
 No `compose.yml` já existem valores padrão adequados para um ambiente local.
+
+## Credenciais de Admin (ambiente local)
+Para facilitar testes, o Compose pode resetar um admin:
+- Usuário: `albertovilar1@gmail.com`
+- Senha: `132747`
+- Variáveis de controle: `RESET_ADMIN_PASSWORD=true`, `RESET_ADMIN_USERNAME`, `RESET_ADMIN_PLAIN_PASSWORD`.
+Use apenas em ambiente local. Em produção, desabilite o reset e troque as credenciais.
 
 ## Desenvolvimento local (sem Docker)
 - Executar com Maven (Windows): `mvnw.cmd spring-boot:run`
@@ -84,7 +131,10 @@ Quando ocorrem erros de validação (HTTP 422 Unprocessable Entity), o backend r
 
 ## CI/CD
 - Workflow de CI disponível em `.github/workflows/ci.yml` para build e testes automáticos.
-- Recomendações: adicionar smoke test do `/actuator/health`, badges de status, e dependência de `db` saudável com `condition: service_healthy` caso necessário.
+- Badge de status: `https://github.com/AlbertoVilar/fastshop-backend/actions/workflows/ci.yml/badge.svg` (adicione no topo do README).
+- Página do workflow: `https://github.com/AlbertoVilar/fastshop-backend/actions/workflows/ci.yml`.
+- Docker Hub (imagem usada no Compose): `https://hub.docker.com/r/albertovilar/fastshop-backend`.
+- Recomendações: adicionar smoke test do `/actuator/health` e `depends_on: condition: service_healthy` para `db`.
 
 ## Solução de Problemas
 - Healthcheck falhando em Alpine: já usamos `wget` no Compose para compatibilidade.
@@ -97,3 +147,13 @@ Projeto educacional/pessoal. Ajuste conforme sua política de licenciamento.
 ## Contato
 - GitHub: `https://github.com/AlbertoVilar`
 - LinkedIn: `https://www.linkedin.com/in/alberto-vilar-316725ab/`
+
+## Screenshots e Coleção de API
+- Adicione uma pasta `docs/` com imagens de chamadas (Postman/Insomnia):
+  - Login (JWT) mostrando `accessToken`.
+  - `Authorization: Bearer <token>` em um `GET /orders/{id}` autenticado.
+  - Exemplo de validação (HTTP 422) com payload de erro contendo `errors`.
+- Sugestão de nomes: `docs/login-jwt.png`, `docs/orders-auth.png`, `docs/validation-422.png`.
+- Inclua uma coleção Postman exportada em `docs/Fastshop.postman_collection.json` e um ambiente `docs/Fastshop.postman_environment.json` com variáveis:
+  - `baseUrl`: `http://localhost:8080`
+  - `jwt`: token atualizado após login.
