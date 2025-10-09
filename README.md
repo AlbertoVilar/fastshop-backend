@@ -1,162 +1,164 @@
 # Fastshop Backend [![CI](https://github.com/AlbertoVilar/fastshop-backend/actions/workflows/ci.yml/badge.svg)](https://github.com/AlbertoVilar/fastshop-backend/actions/workflows/ci.yml)
 
-Sistema backend em Java/Spring Boot para o projeto Fastshop. Foca em APIs REST com segurança, persistência no PostgreSQL, migrações com Flyway, observabilidade via Actuator e execução containerizada com Docker e Docker Compose.
+Fastshop is a backend API for an e-commerce-style system. It supports product and category management, customer registration and updates, carts and orders flows, secured authentication using JWT, persistence with PostgreSQL, migrations via Flyway, and visibility through Spring Boot Actuator. Run locally with Docker Compose in minutes.
 
-## Visão Geral
+## Overview
 - Framework: Spring Boot `3.5.x` (Java `21`).
-- Persistência: JPA/Hibernate com PostgreSQL (prod) e H2 (runtime disponível para dev/testes).
-- Migrações: Flyway.
-- Segurança: Spring Security e JWT (JJWT).
-- Observabilidade: Spring Boot Actuator (`/actuator/health`).
-- Containerização: Docker (imagem `eclipse-temurin:21-jre-alpine`).
-- Orquestração: Docker Compose com serviço `db` (Postgres) e `app`.
+- Persistence: JPA/Hibernate with PostgreSQL (prod) and H2 (dev/test runtime option).
+- Migrations: Flyway.
+- Security: Spring Security and JWT (JJWT).
+- Observability: Spring Boot Actuator (`/actuator/health`).
+- Containerization: Docker (`eclipse-temurin:21-jre-alpine`).
+- Orchestration: Docker Compose with `db` (Postgres) and `app`.
 
-## Arquitetura (alto nível)
-- Camadas típicas: controllers → services → repositories (DTOs e validações Bean Validation).
-- Tratamento de erros: handler global retorna objeto padronizado com mensagens de validação de campos.
-- Profiles: `SPRING_PROFILES_ACTIVE=prod` no Compose para uso de Postgres.
-- Healthcheck: `/actuator/health` validado no container com `wget` (compatível com Alpine).
+## Architecture (high level)
+- Typical layers: controllers → services → repositories (DTOs, Bean Validation).
+- Error handling: global handler returns standardized validation error payloads.
+- Profiles: `SPRING_PROFILES_ACTIVE=prod` (Compose) for Postgres.
+- Healthcheck: `/actuator/health` validated in container using `wget` (Alpine-friendly).
 
-## Pré-requisitos
-- `Java 21` e `Maven` (opcional para rodar sem Docker).
-- `Docker` e `Docker Compose`.
+## Prerequisites
+- `Java 21` and `Maven` (optional for non-Docker runs).
+- `Docker` and `Docker Compose`.
 
-## Quickstart com Docker Compose
-1. Subir os serviços:
+## Quickstart with Docker Compose
+1. Start services:
    - Windows (PowerShell): `docker compose up -d`
-2. Verificar saúde da aplicação:
-   - `Invoke-WebRequest http://localhost:8080/actuator/health` → deve retornar `{"status":"UP"}`
-3. Checar logs da aplicação:
+2. Check app health:
+   - `Invoke-WebRequest http://localhost:8080/actuator/health` → should return `{"status":"UP"}`
+3. Check application logs:
    - `docker compose logs app --tail 120`
 
-Compose principal (`compose.yml`):
-- Porta do app: `8080` mapeada para o host.
-- Porta do db: `5432` mapeada para o host.
-- Healthcheck do app: `wget -qO- http://localhost:8080/actuator/health`.
-- Reinício: `restart: on-failure` para o app e `restart: always` para o db.
+Compose highlights (`compose.yml`):
+- App port: `8080` on host.
+- DB port: `5432` on host.
+- App healthcheck: `wget -qO- http://localhost:8080/actuator/health`.
+- Restart policy: `on-failure` (app) and `always` (db).
 
-## Endpoints Principais
-- Autenticação
-  - `POST /auth/login` — body exemplo:
+## Key Endpoints
+- Authentication
+  - `POST /auth/login` — example body:
     ```json
     {"username":"albertovilar1@gmail.com","password":"132747"}
     ```
-    - Resposta: `200 OK` com `accessToken` (JWT). Use `Authorization: Bearer <token>` nas chamadas autenticadas.
-- Produtos (`/products`)
-  - `GET /products` — lista produtos (público)
-  - `GET /products/{id}` — produto por id (público)
-  - `POST /products` — criar produto (ROLE_ADMIN)
-  - `PUT /products/{id}` — atualizar (ROLE_ADMIN)
-  - `DELETE /products/{id}` — remover (ROLE_ADMIN)
-- Categorias (`/categories`)
-  - `GET /categories` — lista categorias (público)
-  - `GET /categories/{id}` — categoria por id (público)
-  - `POST /categories` — criar categoria (ROLE_ADMIN)
-  - `PUT /categories/{id}` — atualizar (ROLE_ADMIN)
-  - `DELETE /categories/{id}` — remover (ROLE_ADMIN)
-- Clientes (`/customers`)
-  - `POST /customers` — cadastro (público)
-  - `GET /customers` — listar clientes (autenticado)
-  - `GET /customers/{id}` — cliente por id (autenticado)
-  - `PUT /customers/{id}` — atualizar (autenticado)
-  - `DELETE /customers/{id}` — remover (autenticado)
-- Carrinho (`/carts`)
-  - `POST /carts` — criar carrinho (público)
-  - `GET /carts` — listar carrinhos (público)
-  - `GET /carts/{id}` — carrinho por id (público)
-  - `PUT /carts/{id}` — atualizar carrinho (público)
-  - `DELETE /carts/{id}` — remover carrinho (público)
-  - `POST /carts/{cartId}/items` — adicionar item ao carrinho (público)
-  - `DELETE /carts/{cartId}/items/{productId}` — remover item do carrinho (público)
-- Pedidos (`/orders`)
-  - `POST /orders` — criar pedido (autenticado)
-  - `GET /orders` — listar pedidos (ROLE_ADMIN)
-  - `GET /orders/{id}` — pedido por id (autenticado)
-  - `PUT /orders/{id}` — atualizar pedido (ROLE_ADMIN)
-  - `DELETE /orders/{id}` — remover pedido (ROLE_ADMIN)
+    - Response: `200 OK` with `accessToken` (JWT). Use `Authorization: Bearer <token>` for protected requests.
+- Products (`/products`)
+  - `GET /products` — list products (public)
+  - `GET /products/{id}` — get by id (public)
+  - `POST /products` — create (ROLE_ADMIN)
+  - `PUT /products/{id}` — update (ROLE_ADMIN)
+  - `DELETE /products/{id}` — delete (ROLE_ADMIN)
+- Categories (`/categories`)
+  - `GET /categories` — list categories (public)
+  - `GET /categories/{id}` — get by id (public)
+  - `POST /categories` — create (ROLE_ADMIN)
+  - `PUT /categories/{id}` — update (ROLE_ADMIN)
+  - `DELETE /categories/{id}` — delete (ROLE_ADMIN)
+- Customers (`/customers`)
+  - `POST /customers` — register (public)
+  - `GET /customers` — list customers (authenticated)
+  - `GET /customers/{id}` — get by id (authenticated)
+  - `PUT /customers/{id}` — update (authenticated)
+  - `DELETE /customers/{id}` — delete (authenticated)
+- Carts (`/carts`)
+  - `POST /carts` — create cart (public)
+  - `GET /carts` — list carts (public)
+  - `GET /carts/{id}` — get cart by id (public)
+  - `PUT /carts/{id}` — update cart (public)
+  - `DELETE /carts/{id}` — remove cart (public)
+  - `POST /carts/{cartId}/items` — add item (public)
+  - `DELETE /carts/{cartId}/items/{productId}` — remove item (public)
+- Orders (`/orders`)
+  - `POST /orders` — create order (authenticated)
+  - `GET /orders` — list orders (ROLE_ADMIN)
+  - `GET /orders/{id}` — get order by id (authenticated)
+  - `PUT /orders/{id}` — update order (ROLE_ADMIN)
+  - `DELETE /orders/{id}` — delete order (ROLE_ADMIN)
 
-## Configuração (variáveis de ambiente)
-Os principais parâmetros são configuráveis via variáveis de ambiente:
-- `SPRING_DATASOURCE_URL`: ex. `jdbc:postgresql://db:5432/fastshop_db`
-- `SPRING_DATASOURCE_USERNAME`: ex. `fastuser`
-- `SPRING_DATASOURCE_PASSWORD`: ex. `fastpassword`
-- `SPRING_PROFILES_ACTIVE`: ex. `prod`
-- `JWT_SECRET`: chave secreta para assinar tokens JWT
-- `JWT_EXPIRATION`: tempo de expiração em milissegundos (ex.: `3600000`)
-- `RESET_ADMIN_PASSWORD`: `true|false` para reset de admin (opcional)
-- `RESET_ADMIN_USERNAME`: e-mail/usuário do admin (opcional)
-- `RESET_ADMIN_PLAIN_PASSWORD`: nova senha em texto plano (opcional)
+## Configuration (env vars)
+- `SPRING_DATASOURCE_URL`: e.g. `jdbc:postgresql://db:5432/fastshop_db`
+- `SPRING_DATASOURCE_USERNAME`: e.g. `fastuser`
+- `SPRING_DATASOURCE_PASSWORD`: e.g. `fastpassword`
+- `SPRING_PROFILES_ACTIVE`: e.g. `prod`
+- `JWT_SECRET`: secret used to sign JWT tokens
+- `JWT_EXPIRATION`: expiration in ms (e.g. `3600000`)
+- `RESET_ADMIN_PASSWORD`: `true|false` (optional)
+- `RESET_ADMIN_USERNAME`: admin email/username (optional)
+- `RESET_ADMIN_PLAIN_PASSWORD`: new plain password (optional)
 
-No `compose.yml` já existem valores padrão adequados para um ambiente local.
+Defaults suitable for local dev are provided in `compose.yml`.
 
-## Credenciais de Admin (ambiente local)
-Para facilitar testes, o Compose pode resetar um admin:
-- Usuário: `albertovilar1@gmail.com`
-- Senha: `132747`
-- Variáveis de controle: `RESET_ADMIN_PASSWORD=true`, `RESET_ADMIN_USERNAME`, `RESET_ADMIN_PLAIN_PASSWORD`.
-Use apenas em ambiente local. Em produção, desabilite o reset e troque as credenciais.
+## Admin Credentials (local)
+- User: `albertovilar1@gmail.com`
+- Password: `132747`
+- Control envs: `RESET_ADMIN_PASSWORD=true`, plus `RESET_ADMIN_USERNAME` and `RESET_ADMIN_PLAIN_PASSWORD`.
+Use only locally. Disable reset and rotate credentials in production.
 
-## Desenvolvimento local (sem Docker)
-- Executar com Maven (Windows): `mvnw.cmd spring-boot:run`
-- Build do JAR: `mvnw.cmd package -DskipTests`
-- Se necessário, defina as variáveis de datasource ou utilize H2 para testes rápidos.
+## Local Development (without Docker)
+- Run with Maven (Windows): `mvnw.cmd spring-boot:run`
+- Build the JAR: `mvnw.cmd package -DskipTests`
+- Optionally configure datasource env vars or use H2 for quick tests.
 
-## Build e execução com Docker (sem Compose)
-- Build da imagem local: `docker build -t albertovilar/fastshop-backend:local .`
-- Run do container: `docker run -p 8080:8080 --env SPRING_PROFILES_ACTIVE=prod --env SPRING_DATASOURCE_URL=jdbc:postgresql://<host>:5432/fastshop_db --env SPRING_DATASOURCE_USERNAME=fastuser --env SPRING_DATASOURCE_PASSWORD=fastpassword --env JWT_SECRET=<sua_chave> albertovilar/fastshop-backend:local`
+## Docker Build & Run (without Compose)
+- Build local image: `docker build -t albertovilar/fastshop-backend:local .`
+- Run container: `docker run -p 8080:8080 --env SPRING_PROFILES_ACTIVE=prod --env SPRING_DATASOURCE_URL=jdbc:postgresql://<host>:5432/fastshop_db --env SPRING_DATASOURCE_USERNAME=fastuser --env SPRING_DATASOURCE_PASSWORD=fastpassword --env JWT_SECRET=<your_secret> albertovilar/fastshop-backend:local`
 
-## Testes
-- Executar testes: `mvnw.cmd test`
-- Plugin Surefire configurado para rodar `*Test.java`, `*Tests.java`, `*TestCase.java` e `*IT.java`.
+## Tests
+- Run tests: `mvnw.cmd test`
+- Surefire plugin configured for `*Test.java`, `*Tests.java`, `*TestCase.java`, and `*IT.java`.
 
-## Observabilidade
+## Observability
 - Health: `GET http://localhost:8080/actuator/health` → `{"status":"UP"}`
-- Para ambientes conteinerizados, o healthcheck do Compose aguarda o app ficar saudável após o período inicial.
+- For containers, Compose healthcheck waits for app readiness after initial startup.
 
-## Padrão de Erros de Validação
-Quando ocorrem erros de validação (HTTP 422 Unprocessable Entity), o backend retorna um objeto com os campos e mensagens de erro. Exemplo:
+## Validation Error Payload
+Example for HTTP 422 Unprocessable Entity:
 ```json
 {
   "timestamp": "2025-01-01T12:34:56",
   "status": 422,
-  "error": "Recursos inválidos",
-  "message": "Erro de validação nos campos",
+  "error": "Invalid resources",
+  "message": "Field validation errors",
   "path": "/api/resource",
   "errors": [
-    { "fieldName": "nome", "message": "não pode ser vazio" },
-    { "fieldName": "email", "message": "formato inválido" }
+    { "fieldName": "name", "message": "must not be empty" },
+    { "fieldName": "email", "message": "invalid format" }
   ]
 }
 ```
 
 ## CI/CD
-- Workflow de CI disponível em `.github/workflows/ci.yml` para build e testes automáticos.
-- Badge de status: `https://github.com/AlbertoVilar/fastshop-backend/actions/workflows/ci.yml/badge.svg` (adicione no topo do README).
-- Página do workflow: `https://github.com/AlbertoVilar/fastshop-backend/actions/workflows/ci.yml`.
-- Docker Hub (imagem usada no Compose): `https://hub.docker.com/r/albertovilar/fastshop-backend`.
-- Recomendações: adicionar smoke test do `/actuator/health` e `depends_on: condition: service_healthy` para `db`.
+- CI workflow: `.github/workflows/ci.yml` for automated build and tests.
+- Badge: `https://github.com/AlbertoVilar/fastshop-backend/actions/workflows/ci.yml/badge.svg`.
+- Workflow page: `https://github.com/AlbertoVilar/fastshop-backend/actions/workflows/ci.yml`.
+- Docker Hub: `https://hub.docker.com/r/albertovilar/fastshop-backend`.
+- Recommendations: add smoke test for `/actuator/health` and `depends_on: condition: service_healthy` for `db`.
 
-## Solução de Problemas
-- Healthcheck falhando em Alpine: já usamos `wget` no Compose para compatibilidade.
-- Banco não pronto ao iniciar o app: ver `depends_on`; considere `condition: service_healthy`.
-- Portas ocupadas: verifique `:8080` e `:5432` no host.
+## Troubleshooting
+- Alpine healthcheck compatibility ensured via `wget`.
+- DB not ready: check `depends_on`; consider `condition: service_healthy`.
+- Ports busy: verify `:8080` and `:5432` on host.
 
-## Licença e Créditos
-Projeto educacional/pessoal. Ajuste conforme sua política de licenciamento.
+## License & Credits
+Educational/personal project. Adapt per your licensing policy.
 
-## Contato
+## Contact
 - GitHub: `https://github.com/AlbertoVilar`
 - LinkedIn: `https://www.linkedin.com/in/alberto-vilar-316725ab/`
 
-## Screenshots e Coleção de API
-- Adicione uma pasta `docs/` com imagens de chamadas (Postman/Insomnia):
-  - Login (JWT) mostrando `accessToken`.
-  - `Authorization: Bearer <token>` em um `GET /orders/{id}` autenticado.
-  - Exemplo de validação (HTTP 422) com payload de erro contendo `errors`.
-- Sugestão de nomes: `docs/login-jwt.png`, `docs/orders-auth.png`, `docs/validation-422.png`.
-- Coleção Postman: `docs/Fastshop.postman_collection.json`
-- Ambiente Postman: `docs/Fastshop.postman_environment.json` (variáveis: `baseUrl`, `jwt`).
-- Como usar:
-  - Importe a coleção e o ambiente no Postman/Insomnia.
-  - Execute `Auth - Login (Admin)` para obter o `accessToken` e popular `jwt` automaticamente.
-  - Chame endpoints protegidos com o ambiente ativo (header `Authorization` já parametrizado).
+## Screenshots & API Collection
+- Place images (Postman/Insomnia) under `docs/`:
+  - Login (JWT) showing `accessToken`.
+  - `Authorization: Bearer <token>` on an authenticated `GET /orders/{id}`.
+  - Validation example (HTTP 422) with `errors` payload.
+- Suggested names: `docs/login-jwt.png`, `docs/orders-auth.png`, `docs/validation-422.png`.
+- Postman Collection: `docs/Fastshop.postman_collection.json`
+- Postman Environment: `docs/Fastshop.postman_environment.json` (vars: `baseUrl`, `jwt`).
+- How to use:
+  - Import both into Postman/Insomnia.
+  - Run `Auth - Login (Admin)` to get `accessToken` and auto-populate `jwt`.
+  - Call protected endpoints with the environment active (header `Authorization` parameterized).
+
+---
+
+Para leitura em Português, acesse o `README_pt.md`.
