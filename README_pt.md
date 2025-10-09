@@ -1,5 +1,7 @@
 # Fastshop Backend [![CI](https://github.com/AlbertoVilar/fastshop-backend/actions/workflows/ci.yml/badge.svg)](https://github.com/AlbertoVilar/fastshop-backend/actions/workflows/ci.yml)
 
+Este projeto backend simula um sistema de e-commerce, permitindo o gerenciamento de produtos, categorias, clientes, carrinhos de compra e pedidos. Conta com autenticação segura via JWT, persistência de dados em PostgreSQL com migrações Flyway e observabilidade por meio do Actuator. A execução é simplificada com Docker e Docker Compose para levantar o ambiente rapidamente.
+
 Sistema backend em Java/Spring Boot para o projeto Fastshop. Foca em APIs REST com segurança, persistência no PostgreSQL, migrações com Flyway, observabilidade via Actuator e execução containerizada com Docker e Docker Compose.
 
 ## Visão Geral
