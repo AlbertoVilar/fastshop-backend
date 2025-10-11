@@ -37,6 +37,23 @@ Compose principal (`compose.yml`):
 - Healthcheck do app: `wget -qO- http://localhost:8080/actuator/health`.
 - Reinício: `restart: on-failure` para o app e `restart: always` para o db.
 
+## Produção (docker-compose.yml)
+- Utilize o `docker-compose.yml` com um arquivo `.env` para deploy em produção.
+- Passos:
+  - Copie `.env.example` para `.env` e preencha os valores.
+  - Rode `docker compose --env-file .env up -d`.
+- Diferenças em relação ao `compose.yml` (dev local):
+  - O serviço de DB não expõe `ports`; acesso apenas pela rede interna.
+  - A porta do app pode ser mapeada via `APP_HTTP_PORT` (padrão `8080`).
+  - Flags de reset de admin (`RESET_ADMIN_*`) desligadas.
+  - Healthchecks habilitados para DB e app; app espera DB saudável.
+  - Utiliza `SPRING_PROFILES_ACTIVE=prod` e Postgres `16-alpine`.
+- Notas de segurança:
+  - Nunca versionar `.env` com segredos.
+  - Use um `JWT_SECRET` forte e longo.
+  - Mantenha reset de admin desligado em produção e rotacione credenciais.
+  - Prefira rodar atrás de proxy reverso (Nginx/Traefik) com TLS.
+
 ## Endpoints Principais
 - Autenticação
   - `POST /auth/login` — body exemplo:
