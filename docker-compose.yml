@@ -1,0 +1,77 @@
+# docker-compose.yml  (PRODUÇÃO)
+# -------------------------------------------------------------------
+# Serviços:
+# - db   : PostgreSQL 16 (rede interna; NÃO expõe porta por padrão)
+# - app  : FastShop (Spring Boot) com envs vindos do .env
+#
+# Notas de segurança:
+# - NUNCA comitar .env com segredos.
+# - JWT_SECRET forte e longo.
+# - RESET_ADMIN_* DESLIGADOS em produção.
+# - pgAdmin fica FORA do arquivo de produção (use override em DEV).
+# -------------------------------------------------------------------
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: fastshop-postgres
+    restart: always
+
+    # Todas as credenciais vêm do .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+    # Sem ports em produção — acesso só pela rede interna do Docker
+    # (o app e ferramentas na mesma rede acessam pelo hostname "db")
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    # Healthcheck simples (opcional)
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  app:
+    image: albertovilar/fastshop-backend:latest
+    container_name: fastshop-app
+    restart: on-failure
+
+    # Em produção você normalmente expõe a 8080 (ou coloca atrás de um proxy/Nginx/Traefik)
+    ports:
+      - "${APP_HTTP_PORT:-8080}:8080"
+
+    # Variáveis de ambiente (todas vindas do .env)
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+
+      # JWT
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
+
+      # Flags sensíveis de reset DESLIGADAS em produção
+      RESET_ADMIN_PASSWORD: "false"
+      RESET_ADMIN_USERNAME: ""
+      RESET_ADMIN_PLAIN_PASSWORD: ""
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+    # Healthcheck HTTP do app (use curl na imagem final, ou troque por wget se preferir)
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/actuator/health >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+volumes:
+  postgres_data:
