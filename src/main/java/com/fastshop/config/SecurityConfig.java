@@ -49,7 +49,11 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/products/**").permitAll()
-                        .requestMatchers("/carts/**").permitAll()
+                        // Carrinho: leitura pública, escrita autenticada
+                        .requestMatchers(HttpMethod.GET, "/carts/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/carts/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/carts/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/carts/**").authenticated()
                         // Adaptando cadastro: usamos POST /customers como signup
                         .requestMatchers(HttpMethod.POST, "/customers").permitAll()
                         // Categorias: leitura pública
