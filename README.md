@@ -22,18 +22,21 @@ Fastshop is a backend API for an e-commerce-style system. It supports product an
 - `Docker` and `Docker Compose`.
 
 ## Quickstart with Docker Compose
-1. Start services:
-   - Windows (PowerShell): `docker compose up -d`
-2. Check app health:
-   - `Invoke-WebRequest http://localhost:8080/actuator/health` → should return `{"status":"UP"}`
-3. Check application logs:
-   - `docker compose logs app --tail 120`
+Dev (uses base + override automatically):
+1. Create `.env` from `.env.example` (optional for dev).
+2. Start services: `docker compose up -d`
+3. Check health: `Invoke-WebRequest http://localhost:8080/actuator/health` → `{"status":"UP"}`
+4. Logs: `docker compose logs -f app`
+5. pgAdmin (dev only): `http://localhost:5050` (login via `PGADMIN_*` vars)
 
-Compose highlights (`compose.yml`):
-- App port: `8080` on host.
-- DB port: `5432` on host.
-- App healthcheck: `wget -qO- http://localhost:8080/actuator/health`.
-- Restart policy: `on-failure` (app) and `always` (db).
+Prod (base file only):
+1. Copy `.env.example` to `.env` and fill secrets.
+2. Start services: `docker compose -f docker-compose.yml --env-file .env up -d`
+3. Prefer running behind a reverse proxy with TLS.
+
+Compose highlights:
+- Dev: `compose.yml` + `docker-compose.override.yml` with pgAdmin and Postgres port exposed.
+- Prod: `docker-compose.yml` only; DB ports not exposed; healthchecks enabled; admin reset disabled.
 
 ## Production (docker-compose.yml)
 - Use `docker-compose.yml` with an `.env` file for production deployments.

@@ -24,18 +24,21 @@ Sistema backend em Java/Spring Boot para o projeto Fastshop. Foca em APIs REST c
 - `Docker` e `Docker Compose`.
 
 ## Quickstart com Docker Compose
-1. Subir os serviços:
-   - Windows (PowerShell): `docker compose up -d`
-2. Verificar saúde da aplicação:
-   - `Invoke-WebRequest http://localhost:8080/actuator/health` → deve retornar `{"status":"UP"}`
-3. Checar logs da aplicação:
-   - `docker compose logs app --tail 120`
+Dev (usa base + override automaticamente):
+1. Crie `.env` a partir de `.env.example` (opcional para dev).
+2. Suba os serviços: `docker compose up -d`
+3. Health: `Invoke-WebRequest http://localhost:8080/actuator/health` → `{"status":"UP"}`
+4. Logs: `docker compose logs -f app`
+5. pgAdmin (somente dev): `http://localhost:5050` (login via variáveis `PGADMIN_*`)
 
-Compose principal (`compose.yml`):
-- Porta do app: `8080` mapeada para o host.
-- Porta do db: `5432` mapeada para o host.
-- Healthcheck do app: `wget -qO- http://localhost:8080/actuator/health`.
-- Reinício: `restart: on-failure` para o app e `restart: always` para o db.
+Prod (apenas arquivo base):
+1. Copie `.env.example` para `.env` e preencha segredos.
+2. Suba serviços: `docker compose -f docker-compose.yml --env-file .env up -d`
+3. Preferencialmente rode atrás de proxy reverso com TLS.
+
+Destaques do Compose:
+- Dev: `compose.yml` + `docker-compose.override.yml` com pgAdmin e Postgres exposto.
+- Prod: somente `docker-compose.yml`; DB sem `ports` expostos; healthchecks habilitados; reset de admin desabilitado.
 
 ## Produção (docker-compose.yml)
 - Utilize o `docker-compose.yml` com um arquivo `.env` para deploy em produção.
