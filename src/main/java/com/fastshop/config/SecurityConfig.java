@@ -9,6 +9,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,6 +28,7 @@ import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true, proxyTargetClass = true)
 public class SecurityConfig {
 
     @Bean
@@ -49,11 +51,9 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/products/**").permitAll()
-                        // Carrinho: leitura pública, escrita autenticada
-                        .requestMatchers(HttpMethod.GET, "/carts/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/carts/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/carts/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/carts/**").authenticated()
+                        // Carrinho: toda rota requer autenticação; autorização fina via @PreAuthorize
+                        .requestMatchers(HttpMethod.GET, "/carts").hasRole("ADMIN")
+                        .requestMatchers("/carts", "/carts/**").authenticated()
                         // Adaptando cadastro: usamos POST /customers como signup
                         .requestMatchers(HttpMethod.POST, "/customers").permitAll()
                         // Categorias: leitura pública
@@ -128,8 +128,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Permite qualquer origem (ajuste para sua lista de front-ends)
-        configuration.setAllowedOriginPatterns(List.of("*"));
+        // Restringe a origens conhecidas (lista explícita). Ajuste conforme seus ambientes.
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:3000",
+                "http://localhost:4200",
+                "https://fastshop.example.com"
+        ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "Origin", "Accept"));
         configuration.setAllowCredentials(true);
