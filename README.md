@@ -17,6 +17,14 @@ Fastshop is a backend API for an e-commerce-style system. It supports product an
 - Profiles: `SPRING_PROFILES_ACTIVE=prod` (Compose) for Postgres.
 - Healthcheck: `/actuator/health` validated in container using `wget` (Alpine-friendly).
 
+## Recent Changes & Security Notes
+- Pricing integrity: server computes `unitPrice` from `Product.price` for cart and order items. Client-provided `unitPrice` in request DTOs is ignored to prevent tampering.
+- DTO updates: `ProductRequestDTO` requires `categoryId` on create and currently on update; future change may introduce a dedicated `ProductUpdateDTO` where `categoryId` is optional and applied only when provided.
+- Ownership checks: method-level security helpers (`CustomerSecurity`, `OrderSecurity`) ensure only the owner or admins can access/modify specific customer and order resources.
+- CORS tightening: restrict `allowedOrigins` to known hosts when `allowCredentials=true`.
+- Error timestamps: standardized to ISO 8601 using `OffsetDateTime` in `StandardError` responses.
+- Logging hygiene: removed/toned down sensitive authentication logs to avoid leaking password-match signals.
+
 ## Prerequisites
 - `Java 21` and `Maven` (optional for non-Docker runs).
 - `Docker` and `Docker Compose`.
@@ -62,6 +70,8 @@ Compose highlights:
     {"username":"albertovilar1@gmail.com","password":"132747"}
     ```
     - Response: `200 OK` with `accessToken` (JWT). Use `Authorization: Bearer <token>` for protected requests.
+- Users (`/users`)
+  - `GET /users/me` — returns the authenticated user (requires token)
 - Products (`/products`)
   - `GET /products` — list products (public)
   - `GET /products/{id}` — get by id (public)
@@ -78,22 +88,116 @@ Compose highlights:
   - `POST /customers` — register (public)
   - `GET /customers` — list customers (authenticated)
   - `GET /customers/{id}` — get by id (authenticated)
-  - `PUT /customers/{id}` — update (authenticated)
+  - `PUT /customers/{id}` — update (authenticated, ownership enforced)
   - `DELETE /customers/{id}` — delete (authenticated)
 - Carts (`/carts`)
-  - `GET /carts` — list carts (public)
+  - `GET /carts` — list carts (authenticated; returns 404 when empty; consider ADMIN-only for global listing)
   - `GET /carts/{id}` — get cart by id (public)
   - `POST /carts` — create cart (authenticated)
   - `PUT /carts/{id}` — update cart (authenticated)
   - `DELETE /carts/{id}` — remove cart (authenticated)
   - `POST /carts/{cartId}/items` — add item (authenticated)
   - `DELETE /carts/{cartId}/items/{productId}` — remove item (authenticated)
+ 
+### Cart DELETE Behavior
+- `DELETE /carts/{cartId}/items/{productId}`:
+  - Returns `204 No Content` when the removal succeeds.
+  - Returns `404 Not Found` with `StandardError` when the item does not exist in the cart.
+- `DELETE /carts/me/items/{productId}`:
+  - Returns `204 No Content` when the removal succeeds.
+  - Returns `404 Not Found` with `StandardError` when the item does not exist for the authenticated user.
+
+Example `404` response (nonexistent item):
+```json
+{
+  "timestamp": "2025-01-01T12:34:56Z",
+  "status": 404,
+  "error": "Resource not found",
+  "message": "Cart item not found for product: <productId>",
+  "path": "/carts/<cartId>/items/<productId>"
+}
+```
 - Orders (`/orders`)
   - `POST /orders` — create order (authenticated)
   - `GET /orders` — list orders (ROLE_ADMIN)
-  - `GET /orders/{id}` — get order by id (authenticated)
+  - `GET /orders/{id}` — get order by id (authenticated, ownership enforced)
   - `PUT /orders/{id}` — update order (ROLE_ADMIN)
   - `DELETE /orders/{id}` — delete order (ROLE_ADMIN)
+
+### Practical curl examples
+- Authenticate and get token (admin):
+  ```bash
+  curl -sS -X POST "http://localhost:8080/auth/login" \
+    -H "Content-Type: application/json" \
+    -d '{"username":"albertovilar1@gmail.com","password":"132747"}'
+  ```
+
+- Get authenticated user data (`/users/me`):
+  ```bash
+  TOKEN="<paste_accessToken_from_login_response>"
+  curl -sS -H "Authorization: Bearer $TOKEN" "http://localhost:8080/users/me"
+  ```
+
+- Create a customer (public):
+  ```bash
+  curl -sS -X POST "http://localhost:8080/customers" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "name":"Mary Smith",
+      "email":"mary@example.com",
+      "birthDate":"1990-05-20",
+      "phone":"(11) 91234-5678",
+      "cpfOrCnpj":"123.456.789-09"
+    }'
+  ```
+
+- Read customer by ID (owner or admin allowed; non-owner gets 403):
+  ```bash
+  ADMIN_TOKEN="<paste_accessToken_from_login_response>"
+  curl -i -H "Authorization: Bearer $ADMIN_TOKEN" "http://localhost:8080/customers/1"
+  OTHER_TOKEN="<token_of_another_non_owner_user>"
+  curl -i -H "Authorization: Bearer $OTHER_TOKEN" "http://localhost:8080/customers/1"
+  ```
+
+- Remove nonexistent cart item (returns 404):
+  ```bash
+  TOKEN="<accessToken_from_login>"
+  CART_ID=4
+  NONEXISTENT_PRODUCT_ID=9999
+  curl -i -X DELETE "http://localhost:8080/carts/$CART_ID/items/$NONEXISTENT_PRODUCT_ID" \
+    -H "Authorization: Bearer $TOKEN"
+  ```
+
+- Remove existing cart item (returns 204):
+  ```bash
+  TOKEN="<accessToken_from_login>"
+  CART_ID=4
+  EXISTING_PRODUCT_ID=6
+  curl -i -X DELETE "http://localhost:8080/carts/$CART_ID/items/$EXISTING_PRODUCT_ID" \
+    -H "Authorization: Bearer $TOKEN"
+  ```
+
+- Create an order (authenticated; server derives item `unitPrice` from Product.price, request omits price):
+  ```bash
+  # Assuming productId=1 and customerId=1 already exist
+  curl -sS -X POST "http://localhost:8080/orders" \
+    -H "Authorization: Bearer $ADMIN_TOKEN" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "customerId": 1,
+      "items": [
+        {"productId":1, "quantity":2}
+      ]
+    }'
+  ```
+
+- Read order by ID (owner or admin gets 200; non-owner gets 403):
+  ```bash
+  OWNER_TOKEN="<token_of_order_owner>"
+  curl -i -H "Authorization: Bearer $OWNER_TOKEN" "http://localhost:8080/orders/1"
+  OTHER_TOKEN="<token_of_another_user>"
+  curl -i -H "Authorization: Bearer $OTHER_TOKEN" "http://localhost:8080/orders/1"
+  ```
 
 ## Configuration (env vars)
 - `SPRING_DATASOURCE_URL`: e.g. `jdbc:postgresql://db:5432/fastshop_db`
