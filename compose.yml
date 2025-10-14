@@ -1,47 +1,139 @@
+# docker-compose.yml
+# -------------------------------------------------------------------
+# Orquestra 3 serviços:
+# 1) db       -> PostgreSQL 16 (com volume persistente)
+# 2) app      -> FastShop (Spring Boot) já preparado p/ conectar no db
+# 3) pgadmin  -> UI web para administrar o PostgreSQL (http://localhost:5050)
+#
+# Observações importantes:
+# - As credenciais sensíveis estão aqui só para facilitar o teste.
+#   Em produção, mova tudo para um arquivo .env (não versionado) e use ${VAR}.
+# - O host do banco para os serviços dentro do Compose é sempre o NOME DO SERVIÇO (db),
+#   não "localhost".
+# - A porta 5432 do Postgres está exposta (5432:5432) para facilitar acesso externo
+#   (ex.: psql local). Se só o pgAdmin usar, pode remover esse mapeamento por segurança.
+# -------------------------------------------------------------------
+
 services:
-  # Serviço do Banco de Dados PostgreSQL
+  # -----------------------------
+  # Serviço do Banco de Dados
+  # -----------------------------
   db:
     image: postgres:16-alpine
     container_name: fastshop-postgres
     restart: always
+
+    # Variáveis padrão de inicialização do Postgres:
+    #   - cria o banco "fastshop_db"
+    #   - cria o usuário "fastuser" com a senha indicada
     environment:
       POSTGRES_USER: fastuser
       POSTGRES_PASSWORD: fastpassword
       POSTGRES_DB: fastshop_db
+
+    # Mapeamento de porta externa -> interna.
+    # Útil se você quiser acessar o Postgres fora do Docker (ex.: psql, DBeaver)
+    # Se não precisar disso (vai usar só pgAdmin no Compose), pode remover esta seção "ports".
     ports:
       - "5432:5432"
+
+    # Volume nomeado para persistir os dados do banco
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  # Serviço da Aplicação Spring Boot (FastShop)
+    # Healthcheck simples do Postgres (habilitado)
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fastuser -d fastshop_db || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ---------------------------------
+  # Serviço da Aplicação Spring Boot
+  # ---------------------------------
   app:
     container_name: fastshop-app
-    image: albertovilar/fastshop-backend:latest
+    # Constrói a imagem do backend a partir do código local
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: fastshop-backend:local
+    restart: on-failure
+
+    # Mapeia a porta do container (8080) para a máquina host (8080)
     ports:
       - "8080:8080"
+
+    # Variáveis para o Spring Boot conectar no Postgres do serviço "db".
+    # IMPORTANTE: repare no hostname "db" na URL JDBC.
     environment:
-      # Configuração para o Spring se conectar ao serviço 'db'
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/fastshop_db
       SPRING_DATASOURCE_USERNAME: fastuser
       SPRING_DATASOURCE_PASSWORD: fastpassword
       SPRING_PROFILES_ACTIVE: prod
-      # JWT configuration (required by TokenService)
+      SPRING_FLYWAY_ENABLED: "false"
+
+      # --- JWT (demonstração) ---
+      # Em produção, troque por uma chave forte e mova para .env/secret
       JWT_SECRET: fastshop-super-secret-key-please-change-0123456789
       JWT_EXPIRATION: 3600000
-      # Admin password reset (optional; set to true to enable)
+
+      # --- Reset de senha do admin (use apenas quando precisar) ---
       RESET_ADMIN_PASSWORD: "true"
       RESET_ADMIN_USERNAME: "albertovilar1@gmail.com"
       RESET_ADMIN_PLAIN_PASSWORD: "132747"
+
+    # Aguarda o DB ficar saudável antes de iniciar o app
     depends_on:
-      - db
-    restart: on-failure
+      db:
+        condition: service_healthy
+
+    # Healthcheck HTTP do próprio app (usa wget dentro da imagem do app).
+    # Se sua imagem não tiver 'wget', troque por curl (exemplo nos comentários abaixo).
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health || exit 1"]
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health/readiness || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
 
-# Volume para persistência
+    # Alternativa ao healthcheck com curl (se preferir/precisar):
+    # healthcheck:
+    #   test: ["CMD", "curl", "-fsS", "http://localhost:8080/actuator/health"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 5
+    #   start_period: 60s
+
+  # -----------------------------
+  # pgAdmin (UI do PostgreSQL)
+  # -----------------------------
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: fastshop-pgadmin
+    restart: always
+
+    # Abre a interface web do pgAdmin na porta 5050 do host
+    ports:
+      - "5050:80"
+
+    # Credenciais de login do pgAdmin (não são do Postgres!)
+    environment:
+      PGADMIN_DEFAULT_EMAIL: albertovilar1@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: "132747"
+
+    # Sobe depois do banco (não espera healthcheck, apenas ordem de start)
+    depends_on:
+      - db
+
+    # Volume para guardar configurações (servers registrados, preferências, etc.)
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+# -----------------------------
+# Volumes nomeados (persistência)
+# -----------------------------
 volumes:
   postgres_data:
+  pgadmin_data:
