@@ -31,6 +31,7 @@ public class Customer {
     private LocalDate birthDate;
     private String phone;
     private String cpfOrCnpj;
+
     @CreatedDate
     @Column(updatable = false)
     private Instant createdAt;

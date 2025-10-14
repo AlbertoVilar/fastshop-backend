@@ -21,8 +21,10 @@ public class Product {
     private String name;
     private String description;
     private BigDecimal price;
+
     @Column(name = "unit_price")
     private BigDecimal unitPrice;
+
     private Integer stock;
     private String imageUrl;
 

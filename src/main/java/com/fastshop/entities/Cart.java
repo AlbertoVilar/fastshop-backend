@@ -30,6 +30,9 @@ public class Cart {
     @Builder.Default
     private List<CartItem> items = new ArrayList<>();
 
+    @Version
+    private Long version;
+
     // Método para adicionar um item ao carrinho
     public void addItem(Product product, int quantity) {
 
@@ -49,10 +52,10 @@ public class Cart {
             this.items.add(newItem);
         }
     }
-    // Remove um item do carrinho com base no ID do produto'
-    public void removeItem(Long productId) {
-        // Implemente a remoção condicional aqui
-        this.items.removeIf(item -> item.getProduct().getId().equals(productId));
-
+    // Remove um item do carrinho com base no ID do produto
+    // Retorna true se algum item foi removido, false caso contrário
+    public boolean removeItem(Long productId) {
+        boolean removed = this.items.removeIf(item -> item.getProduct().getId().equals(productId));
+        return removed;
     }
 }

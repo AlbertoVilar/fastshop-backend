@@ -1,8 +1,6 @@
 package com.fastshop.dto;
 
 import lombok.*;
-import java.math.BigDecimal;
-import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
@@ -21,6 +19,5 @@ public class CartItemRequestDTO {
     @Min(value = 1, message = "Quantidade deve ser pelo menos 1")
     private Integer quantity;
 
-    @DecimalMin(value = "0.00", message = "Preço unitário não pode ser negativo")
-    private BigDecimal unitPrice;
+    // unitPrice é calculado no servidor a partir de Product.price
 }
