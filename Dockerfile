@@ -26,6 +26,9 @@ WORKDIR /app
 # Expõe a porta que o Spring Boot usa
 EXPOSE 8080
 
+# Instala utilitário 'wget' para healthchecks em ambientes Alpine
+RUN apk add --no-cache wget
+
 # Copia o JAR compilado da etapa 'builder'
 COPY --from=builder /app/target/*.jar app.jar
 
