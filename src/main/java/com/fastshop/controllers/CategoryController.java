@@ -6,6 +6,9 @@ import com.fastshop.services.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/categories")
@@ -19,7 +22,7 @@ public class CategoryController {
     @PostMapping
     public ResponseEntity<CategoryResponseDTO> createCategory(@RequestBody @Valid CategoryRequestDTO dto) {
         CategoryResponseDTO response = categoryService.createCategory(dto);
-        java.net.URI location = org.springframework.web.servlet.support.ServletUriComponentsBuilder
+      URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(response.getId())

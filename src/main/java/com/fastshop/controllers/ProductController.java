@@ -1,13 +1,16 @@
 package com.fastshop.controllers;
 
 import com.fastshop.dto.ProductRequestDTO;
+import com.fastshop.dto.ProductUpdateDTO;
 import com.fastshop.dto.ProductResponseDTO;
 import com.fastshop.mappers.ProductDTOConverter;
 import com.fastshop.services.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -24,7 +27,7 @@ public class ProductController {
 
     // Controller methods will go here
     @GetMapping("/{id}")
-    public ResponseEntity<ProductResponseDTO> getProductsById(@PathVariable Long id) {
+    public ResponseEntity<ProductResponseDTO> getProductById(@PathVariable Long id) {
         ProductResponseDTO responseDTO = productService.getProductById(id);
         return ResponseEntity.ok(responseDTO);
     }
@@ -38,7 +41,7 @@ public class ProductController {
     @PostMapping
     public ResponseEntity<ProductResponseDTO> createProduct(@RequestBody @Valid ProductRequestDTO requestDTO) {
         ProductResponseDTO responseDTO = productService.createProduct(requestDTO);
-        java.net.URI location = org.springframework.web.servlet.support.ServletUriComponentsBuilder
+        URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(responseDTO.getId())
@@ -48,9 +51,8 @@ public class ProductController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponseDTO> updateProduct(@PathVariable Long id,
-                                                            @RequestBody @Valid ProductRequestDTO productRequestDTO) {
-        ProductResponseDTO responseDTO = productService.updateProduct(id, productRequestDTO);
-
+                                                            @RequestBody @Valid ProductUpdateDTO productUpdateDTO) {
+        ProductResponseDTO responseDTO = productService.updateProduct(id, productUpdateDTO);
         return ResponseEntity.ok(responseDTO);
     }
 
