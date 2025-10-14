@@ -1,6 +1,7 @@
 package com.fastshop.services;
 
 import com.fastshop.dto.ProductRequestDTO;
+import com.fastshop.dto.ProductUpdateDTO;
 import com.fastshop.dto.ProductResponseDTO;
 import com.fastshop.entities.Product;
 import com.fastshop.entities.Category;
@@ -80,7 +81,7 @@ class ProductServiceTest {
         Product produtoExistente = new Product();
         produtoExistente.setId(id);
 
-        ProductRequestDTO req = ProductRequestDTO.builder()
+        ProductUpdateDTO req = ProductUpdateDTO.builder()
                 .name("Produto Atualizado")
                 .description("Descrição Atualizada")
                 .price(BigDecimal.valueOf(100.00))
@@ -98,7 +99,6 @@ class ProductServiceTest {
                 .build();
 
         when(productRepository.findById(id)).thenReturn(Optional.of(produtoExistente));
-        doNothing().when(productConverter).updateEntityFromDTO(req, produtoExistente);
         when(productRepository.save(produtoExistente)).thenReturn(produtoExistente);
         when(productConverter.toResponseDTO(produtoExistente)).thenReturn(produtoDTO);
 
@@ -112,7 +112,7 @@ class ProductServiceTest {
     @Test
     void updateProduct_deveLancarExcecao_quandoProdutoNaoExistir() {
         Long id = 99L;
-        ProductRequestDTO req = new ProductRequestDTO();
+        ProductUpdateDTO req = new ProductUpdateDTO();
 
         when(productRepository.findById(id)).thenReturn(Optional.empty());
 
