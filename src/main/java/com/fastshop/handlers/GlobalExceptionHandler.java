@@ -10,7 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
             ResourceNotFoundException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.NOT_FOUND;
         StandardError err = new StandardError();
-        err.setTimestamp(LocalDateTime.now().toString());
+        err.setTimestamp(OffsetDateTime.now().toString());
         err.setStatus(status.value());
         err.setError("Recurso não encontrado");
         err.setMessage(ex.getMessage());
@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
             MethodArgumentNotValidException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;
         StandardError err = new StandardError();
-        err.setTimestamp(LocalDateTime.now().toString());
+        err.setTimestamp(OffsetDateTime.now().toString());
         err.setStatus(status.value());
         err.setError("Recursos inválidos");
         err.setMessage("Erro de validação nos campos");
@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<StandardError> handleDataIntegrityViolation(DataIntegrityViolationException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST; // Could be CONFLICT depending on semantics
         StandardError err = new StandardError();
-        err.setTimestamp(LocalDateTime.now().toString());
+        err.setTimestamp(OffsetDateTime.now().toString());
         err.setStatus(status.value());
         err.setError("Violação de integridade de dados");
         String message = ex.getMostSpecificCause() != null ? ex.getMostSpecificCause().getMessage() : ex.getMessage();
@@ -68,7 +68,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<StandardError> handleDatabase(DatabaseException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST; // ou CONFLICT
         StandardError err = new StandardError();
-        err.setTimestamp(LocalDateTime.now().toString());
+        err.setTimestamp(OffsetDateTime.now().toString());
         err.setStatus(status.value());
         err.setError("Erro de integridade de banco de dados");
         err.setMessage(ex.getMessage());
@@ -79,7 +79,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<StandardError> handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         StandardError err = new StandardError();
-        err.setTimestamp(LocalDateTime.now().toString());
+        err.setTimestamp(OffsetDateTime.now().toString());
         err.setStatus(status.value());
         err.setError("Requisição inválida");
         err.setMessage(ex.getMessage());
@@ -90,7 +90,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<StandardError> handleHttpMessageNotReadable(org.springframework.http.converter.HttpMessageNotReadableException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         StandardError err = new StandardError();
-        err.setTimestamp(LocalDateTime.now().toString());
+        err.setTimestamp(OffsetDateTime.now().toString());
         err.setStatus(status.value());
         err.setError("Erro de leitura do corpo da requisição");
         err.setMessage("JSON malformado ou campos inválidos: " + ex.getMostSpecificCause().getMessage());
@@ -103,7 +103,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<StandardError> handleBadCredentials(BadCredentialsException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.UNAUTHORIZED;
         StandardError err = new StandardError();
-        err.setTimestamp(LocalDateTime.now().toString());
+        err.setTimestamp(OffsetDateTime.now().toString());
         err.setStatus(status.value());
         err.setError("Credenciais inválidas");
         err.setMessage("Usuário ou senha incorretos");
@@ -116,7 +116,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<StandardError> handleAuthentication(AuthenticationException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.UNAUTHORIZED;
         StandardError err = new StandardError();
-        err.setTimestamp(LocalDateTime.now().toString());
+        err.setTimestamp(OffsetDateTime.now().toString());
         err.setStatus(status.value());
         err.setError("Falha na autenticação");
         err.setMessage("Usuário ou senha incorretos");

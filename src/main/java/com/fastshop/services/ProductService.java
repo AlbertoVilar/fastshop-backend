@@ -3,6 +3,7 @@ package com.fastshop.services;
 import com.fastshop.dto.OrderRequestDTO;
 import com.fastshop.dto.OrderResponseDTO;
 import com.fastshop.dto.ProductRequestDTO;
+import com.fastshop.dto.ProductUpdateDTO;
 import com.fastshop.dto.ProductResponseDTO;
 import com.fastshop.entities.Category;
 import com.fastshop.entities.Order;
@@ -61,12 +62,27 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductResponseDTO updateProduct(Long id, ProductRequestDTO productRequestDTO) {
+    public ProductResponseDTO updateProduct(Long id, ProductUpdateDTO productUpdateDTO) {
         Optional<Product> productExistent = productRepository.findById(id);
 
         if (productExistent.isPresent()) {
             Product product = productExistent.get();
-            productConverter.updateEntityFromDTO(productRequestDTO, product);
+            // Atualiza campos básicos
+            if (productUpdateDTO.getName() != null) product.setName(productUpdateDTO.getName());
+            if (productUpdateDTO.getDescription() != null) product.setDescription(productUpdateDTO.getDescription());
+            if (productUpdateDTO.getPrice() != null) {
+                product.setPrice(productUpdateDTO.getPrice());
+                product.setUnitPrice(productUpdateDTO.getPrice());
+            }
+            if (productUpdateDTO.getStock() != null) product.setStock(productUpdateDTO.getStock());
+            if (productUpdateDTO.getImageUrl() != null) product.setImageUrl(productUpdateDTO.getImageUrl());
+
+            // Atualiza categoria condicionalmente
+            if (productUpdateDTO.getCategoryId() != null) {
+                Category category = categoryRepository.findById(productUpdateDTO.getCategoryId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada com o ID: " + productUpdateDTO.getCategoryId()));
+                product.setCategory(category);
+            }
             return productConverter.toResponseDTO(productRepository.save(product));
         } else {
             throw new ResourceNotFoundException("Produto não encontrado com o ID: " + id);

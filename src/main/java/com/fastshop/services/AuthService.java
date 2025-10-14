@@ -29,11 +29,6 @@ public class AuthService {
     }
 
     public AuthResponseDTO authenticate(AuthRequestDTO request) {
-        // Diagnóstico: verificar se senha em texto coincide com hash armazenado
-        userRepository.findByUsername(request.getUsername()).ifPresentOrElse(user -> {
-            boolean matches = passwordEncoder.matches(request.getPassword(), user.getPassword());
-            logger.info("Auth diagnostic: username={}, passwordMatches={}", request.getUsername(), matches);
-        }, () -> logger.warn("Auth diagnostic: username={} not found before authentication", request.getUsername()));
 
         // 1. Autenticar credenciais
         var authenticationToken = new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());

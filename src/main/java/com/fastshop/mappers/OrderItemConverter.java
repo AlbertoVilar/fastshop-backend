@@ -17,7 +17,7 @@ public class OrderItemConverter {
                 .order(order)
                 .product(product)
                 .quantity(requestDTO.getQuantity())
-                .unitPrice(requestDTO.getUnitPrice()) // Corrigido para usar o valor do DTO
+                .unitPrice(product.getPrice())
                 .build();
     }
 

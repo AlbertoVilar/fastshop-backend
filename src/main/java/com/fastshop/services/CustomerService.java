@@ -28,7 +28,7 @@ public class CustomerService {
         this.addressRepository = addressRepository;
         this.repository = repository;
     }
-    public CustomerResponseDTO creatCustomer(CustomerRequestDTO requestDTO) {
+    public CustomerResponseDTO createCustomer(CustomerRequestDTO requestDTO) {
 
         List<Address> addresses = addressRepository.findAllById(requestDTO.getAddressIds());
         if (addresses.size() != requestDTO.getAddressIds().size()) {

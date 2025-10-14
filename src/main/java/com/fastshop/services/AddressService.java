@@ -23,7 +23,7 @@ public class AddressService {
 
     // CRUD
    public AddressResponseDTO createAddress(AddressRequestDTO dto) {
-        var address = addressConverter.fronDto(dto);
+        var address = addressConverter.fromDto(dto);
         address = addressRepository.save(address);
         return addressConverter.toResponseDTO(address);
    }
