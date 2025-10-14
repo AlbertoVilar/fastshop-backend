@@ -68,6 +68,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/categories/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/categories/**").hasRole("ADMIN")
 
+                        // Permitir que usuário autenticado acesse seus próprios dados
+                        .requestMatchers(HttpMethod.GET, "/users/me").authenticated()
+                        // Demais rotas de /users continuam restritas a ADMIN
                         .requestMatchers("/users/**").hasRole("ADMIN")
                         // Pagamento de pedidos (caso exista a rota)
                         .requestMatchers(HttpMethod.POST, "/orders/*/payment").hasRole("ADMIN")

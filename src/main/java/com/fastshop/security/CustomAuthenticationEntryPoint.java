@@ -17,14 +17,14 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setStatus(HttpStatus.FORBIDDEN.value()); // 403 Forbidden
         response.setContentType("application/json");
 
         StandardError err = new StandardError();
         err.setTimestamp(LocalDateTime.now().toString());
-        err.setStatus(HttpStatus.UNAUTHORIZED.value());
-        err.setError("Credenciais inválidas");
-        err.setMessage("Usuário ou senha incorretos");
+        err.setStatus(HttpStatus.FORBIDDEN.value()); // 403
+        err.setError("Acesso negado");
+        err.setMessage("Você não tem permissão para acessar este recurso");
         err.setPath(request.getRequestURI());
 
         response.getWriter().write(objectMapper.writeValueAsString(err));
