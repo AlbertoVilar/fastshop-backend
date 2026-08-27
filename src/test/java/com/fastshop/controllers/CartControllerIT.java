@@ -35,10 +35,10 @@ public class CartControllerIT {
 
     // Credenciais de um cliente para testar o carrinho
     private static final String CUSTOMER_USERNAME = "alex@gmail.com";
-    private static final String CUSTOMER_PASSWORD = "132747";
+    private static final String CUSTOMER_PASSWORD = "test-password-only";
     // Outro cliente para validar propriedade
     private static final String OTHER_CUSTOMER_USERNAME = "maria@email.com";
-    private static final String OTHER_CUSTOMER_PASSWORD = "132747";
+    private static final String OTHER_CUSTOMER_PASSWORD = "test-password-only";
 
     // Testes de integração para os endpoints do carrinho
     // Método auxiliar para obter o token JWT
