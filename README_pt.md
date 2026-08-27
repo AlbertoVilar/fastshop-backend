@@ -69,7 +69,7 @@ Destaques do Compose:
 - Autenticação
   - `POST /auth/login` — body exemplo:
     ```json
-    {"username":"albertovilar1@gmail.com","password":"132747"}
+    {"username":"<admin_username>","password":"<admin_password>"}
     ```
     - Resposta: `200 OK` com `accessToken` (JWT). Use `Authorization: Bearer <token>` nas chamadas autenticadas.
 - Usuários (`/users`)
@@ -131,7 +131,7 @@ Exemplo de resposta `404` (item inexistente):
   ```bash
   curl -sS -X POST "http://localhost:8080/auth/login" \
     -H "Content-Type: application/json" \
-    -d '{"username":"albertovilar1@gmail.com","password":"132747"}'
+    -d '{"username":"<admin_username>","password":"<admin_password>"}'
   ```
 
 - Consultar dados do usuário autenticado (`/users/me`):
@@ -216,12 +216,9 @@ Os principais parâmetros são configuráveis via variáveis de ambiente:
 
 No `compose.yml` já existem valores padrão adequados para um ambiente local.
 
-## Credenciais de Admin (ambiente local)
-Para facilitar testes, o Compose pode resetar um admin:
-- Usuário: `albertovilar1@gmail.com`
-- Senha: `132747`
-- Variáveis de controle: `RESET_ADMIN_PASSWORD=true`, `RESET_ADMIN_USERNAME`, `RESET_ADMIN_PLAIN_PASSWORD`.
-Use apenas em ambiente local. Em produção, desabilite o reset e troque as credenciais.
+## Acesso local
+
+Nenhuma credencial de conta é versionada. Para testar endpoints autenticados, crie um usuário local e informe as credenciais apenas no seu ambiente (por exemplo, em uma variável do Postman). Não use credenciais reais ou reutilizadas em documentação, coleções ou arquivos do Compose.
 
 ## Desenvolvimento local (sem Docker)
 - Executar com Maven (Windows): `mvnw.cmd spring-boot:run`
