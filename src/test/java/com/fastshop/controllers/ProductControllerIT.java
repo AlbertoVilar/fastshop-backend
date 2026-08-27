@@ -46,7 +46,7 @@ public class ProductControllerIT {
     @Test
     @DisplayName("createProduct_comNomeVazio_deveRetornar422UnprocessableEntity")
     void createProduct_comNomeVazio_deveRetornar422UnprocessableEntity() throws Exception {
-        String token = obtainAccessToken("albertovilar1@gmail.com", "132747");
+        String token = obtainAccessToken("admin@fastshop.test", "test-password-only");
 
         // Cria categoria única válida antes para evitar 404
         var categoryJson = "{\"name\":\"Cat Teste Valida Nome\",\"description\":\"Categoria temporária para teste de validação\"}";
