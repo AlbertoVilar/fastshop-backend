@@ -47,8 +47,8 @@ public class OrderControllerIT {
     @Test
     @DisplayName("GET /orders/{id} por não-dono deve retornar 403 Forbidden")
     void getOrderById_nonOwner_shouldReturn403() throws Exception {
-        String ownerToken = obtainAccessToken("alex@gmail.com", "132747");
-        String otherToken = obtainAccessToken("maria@email.com", "132747");
+        String ownerToken = obtainAccessToken("alex@gmail.com", "test-password-only");
+        String otherToken = obtainAccessToken("maria@email.com", "test-password-only");
 
         Long customerId = 1L; // Alex
 
@@ -81,7 +81,7 @@ public class OrderControllerIT {
     @Test
     @DisplayName("GET /orders/{id} por dono deve retornar 200 OK")
     void getOrderById_owner_shouldReturn200() throws Exception {
-        String ownerToken = obtainAccessToken("alex@gmail.com", "132747");
+        String ownerToken = obtainAccessToken("alex@gmail.com", "test-password-only");
         Long customerId = 1L;
 
         String orderRequestJson = "{\n" +
