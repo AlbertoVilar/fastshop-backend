@@ -2,7 +2,7 @@
   "info": {
     "name": "Fastshop API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "description": "Coleção de requests para autenticação JWT, produtos, categorias, pedidos, carrinhos e health."
+    "description": "Coleção de requests para autenticação JWT, produtos, categorias, pedidos, carrinhos e health. Configure adminUsername e adminPassword localmente antes de executar o login."
   },
   "item": [
     {
@@ -10,13 +10,25 @@
       "request": {
         "method": "POST",
         "header": [
-          { "key": "Content-Type", "value": "application/json" }
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"username\": \"albertovilar1@gmail.com\",\n  \"password\": \"132747\"\n}"
+          "raw": "{\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
         },
-        "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+        "url": {
+          "raw": "{{baseUrl}}/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ]
+        }
       },
       "event": [
         {
@@ -36,21 +48,47 @@
       "name": "Actuator - Health",
       "request": {
         "method": "GET",
-        "url": { "raw": "{{baseUrl}}/actuator/health", "host": ["{{baseUrl}}"], "path": ["actuator", "health"] }
+        "url": {
+          "raw": "{{baseUrl}}/actuator/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "actuator",
+            "health"
+          ]
+        }
       }
     },
     {
       "name": "Products - List",
       "request": {
         "method": "GET",
-        "url": { "raw": "{{baseUrl}}/products", "host": ["{{baseUrl}}"], "path": ["products"] }
+        "url": {
+          "raw": "{{baseUrl}}/products",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "products"
+          ]
+        }
       }
     },
     {
       "name": "Products - Get by Id",
       "request": {
         "method": "GET",
-        "url": { "raw": "{{baseUrl}}/products/1", "host": ["{{baseUrl}}"], "path": ["products","1"] }
+        "url": {
+          "raw": "{{baseUrl}}/products/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "products",
+            "1"
+          ]
+        }
       }
     },
     {
@@ -58,14 +96,28 @@
       "request": {
         "method": "POST",
         "header": [
-          { "key": "Content-Type", "value": "application/json" },
-          { "key": "Authorization", "value": "Bearer {{jwt}}" }
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
         ],
         "body": {
           "mode": "raw",
           "raw": "{\n  \"categoryId\": 6,\n  \"name\": \"Produto Livre\",\n  \"imageUrl\": \"\",\n  \"description\": \"produto de teste\",\n  \"price\": 19.9,\n  \"stock\": 5\n}"
         },
-        "url": { "raw": "{{baseUrl}}/products", "host": ["{{baseUrl}}"], "path": ["products"] }
+        "url": {
+          "raw": "{{baseUrl}}/products",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "products"
+          ]
+        }
       }
     },
     {
@@ -73,18 +125,43 @@
       "request": {
         "method": "POST",
         "header": [
-          { "key": "Content-Type", "value": "application/json" },
-          { "key": "Authorization", "value": "Bearer {{jwt}}" }
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
         ],
-        "body": { "mode": "raw", "raw": "{}" },
-        "url": { "raw": "{{baseUrl}}/products", "host": ["{{baseUrl}}"], "path": ["products"] }
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/products",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "products"
+          ]
+        }
       }
     },
     {
       "name": "Categories - List",
       "request": {
         "method": "GET",
-        "url": { "raw": "{{baseUrl}}/categories", "host": ["{{baseUrl}}"], "path": ["categories"] }
+        "url": {
+          "raw": "{{baseUrl}}/categories",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "categories"
+          ]
+        }
       }
     },
     {
@@ -92,37 +169,94 @@
       "request": {
         "method": "POST",
         "header": [
-          { "key": "Content-Type", "value": "application/json" },
-          { "key": "Authorization", "value": "Bearer {{jwt}}" }
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
         ],
         "body": {
           "mode": "raw",
           "raw": "{\n  \"name\": \"Categoria Livre\",\n  \"description\": \"teste\"\n}"
         },
-        "url": { "raw": "{{baseUrl}}/categories", "host": ["{{baseUrl}}"], "path": ["categories"] }
+        "url": {
+          "raw": "{{baseUrl}}/categories",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "categories"
+          ]
+        }
       }
     },
     {
       "name": "Orders - Get by Id (AUTH)",
       "request": {
         "method": "GET",
-        "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ],
-        "url": { "raw": "{{baseUrl}}/orders/1", "host": ["{{baseUrl}}"], "path": ["orders","1"] }
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/orders/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "orders",
+            "1"
+          ]
+        }
       }
     },
     {
       "name": "Carts - List",
       "request": {
         "method": "GET",
-        "url": { "raw": "{{baseUrl}}/carts", "host": ["{{baseUrl}}"], "path": ["carts"] }
+        "url": {
+          "raw": "{{baseUrl}}/carts",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "carts"
+          ]
+        }
       }
     },
     {
       "name": "Carts - Get by Id",
       "request": {
         "method": "GET",
-        "url": { "raw": "{{baseUrl}}/carts/1", "host": ["{{baseUrl}}"], "path": ["carts","1"] }
+        "url": {
+          "raw": "{{baseUrl}}/carts/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "carts",
+            "1"
+          ]
+        }
       }
+    }
+  ],
+  "variable": [
+    {
+      "key": "adminUsername",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminPassword",
+      "value": "",
+      "type": "string"
     }
   ]
 }
