@@ -48,8 +48,8 @@ public class CustomerControllerIT {
     @Test
     @DisplayName("GET /customers/{id} por não-dono deve retornar 403 Forbidden")
     void getCustomerById_nonOwner_shouldReturn403() throws Exception {
-        String ownerToken = obtainAccessToken("alex@gmail.com", "132747");
-        String otherToken = obtainAccessToken("maria@email.com", "132747");
+        String ownerToken = obtainAccessToken("alex@gmail.com", "test-password-only");
+        String otherToken = obtainAccessToken("maria@email.com", "test-password-only");
 
         Long ownerCustomerId = 1L; // Alex
 
@@ -64,8 +64,8 @@ public class CustomerControllerIT {
     @Test
     @DisplayName("PUT /customers/{id} por não-dono deve retornar 403 Forbidden")
     void updateCustomer_nonOwner_shouldReturn403() throws Exception {
-        String ownerToken = obtainAccessToken("alex@gmail.com", "132747");
-        String otherToken = obtainAccessToken("maria@email.com", "132747");
+        String ownerToken = obtainAccessToken("alex@gmail.com", "test-password-only");
+        String otherToken = obtainAccessToken("maria@email.com", "test-password-only");
 
         Long ownerCustomerId = 1L; // Alex
 
@@ -91,7 +91,7 @@ public class CustomerControllerIT {
     @Test
     @DisplayName("GET /customers/{id} por dono deve retornar 200 OK")
     void getCustomerById_owner_shouldReturn200() throws Exception {
-        String ownerToken = obtainAccessToken("alex@gmail.com", "132747");
+        String ownerToken = obtainAccessToken("alex@gmail.com", "test-password-only");
         Long ownerCustomerId = 1L; // Alex
 
         mockMvc.perform(get("/customers/" + ownerCustomerId)
