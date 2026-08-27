@@ -5,29 +5,29 @@
 INSERT INTO roles (id, authority) VALUES (1, 'ROLE_ADMIN');
 INSERT INTO roles (id, authority) VALUES (2, 'ROLE_CUSTOMER');
 
--- Usuario: albertovilar1@gmail.com | Senha: 132747 (BCrypt)
+-- Usuario: admin@fastshop.test | Senha: test-password-only (BCrypt)
 INSERT INTO users (id, username, password) VALUES (
   1,
-  'albertovilar1@gmail.com',
-  '$2a$10$QwS6UVcNoS5wSpURmkJbS.Wd4fEclOaClMQKaQ9JjOkCI8ZtaTGVm'
+  'admin@fastshop.test',
+  '$2a$10$GoRayuj3tiCr5YL3S0lPqujjD.LZ.t95rx6H7eSiIZqJ1EONVqjTW'
 );
 
--- Usuario: alex@gmail.com | Senha: 132747 (BCrypt)
+-- Usuario: alex@gmail.com | Senha: test-password-only (BCrypt)
 INSERT INTO users (id, username, password) VALUES (
   2,
   'alex@gmail.com',
-  '$2a$10$QwS6UVcNoS5wSpURmkJbS.Wd4fEclOaClMQKaQ9JjOkCI8ZtaTGVm'
+  '$2a$10$GoRayuj3tiCr5YL3S0lPqujjD.LZ.t95rx6H7eSiIZqJ1EONVqjTW'
 );
 
 -- USER_ROLES
 INSERT INTO user_roles (user_id, role_id) VALUES (1, 1);
 INSERT INTO user_roles (user_id, role_id) VALUES (2, 2);
 
--- Usuario: maria@email.com | Senha: 132747 (BCrypt)
+-- Usuario: maria@email.com | Senha: test-password-only (BCrypt)
 INSERT INTO users (id, username, password) VALUES (
   3,
   'maria@email.com',
-  '$2a$10$QwS6UVcNoS5wSpURmkJbS.Wd4fEclOaClMQKaQ9JjOkCI8ZtaTGVm'
+  '$2a$10$GoRayuj3tiCr5YL3S0lPqujjD.LZ.t95rx6H7eSiIZqJ1EONVqjTW'
 );
 
 INSERT INTO user_roles (user_id, role_id) VALUES (3, 2);
