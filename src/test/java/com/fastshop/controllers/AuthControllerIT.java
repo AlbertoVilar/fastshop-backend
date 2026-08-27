@@ -32,7 +32,7 @@ public class AuthControllerIT {
     private ObjectMapper objectMapper;
 
     private static final String CUSTOMER_USERNAME = "alex@gmail.com";
-    private static final String CUSTOMER_PASSWORD = "132747";
+    private static final String CUSTOMER_PASSWORD = "test-password-only";
 
     private String obtainAccessToken(String username, String password) throws Exception {
         AuthRequestDTO authRequest = new AuthRequestDTO(username, password);
@@ -54,7 +54,7 @@ public class AuthControllerIT {
     @DisplayName("login_withValidCredentials_shouldReturnAuthResponseDTOAnd200Ok")
     void login_withValidCredentials_shouldReturnAuthResponseDTOAnd200Ok() throws Exception {
 
-        AuthRequestDTO authRequest = new AuthRequestDTO("albertovilar1@gmail.com", "132747");
+        AuthRequestDTO authRequest = new AuthRequestDTO("admin@fastshop.test", "test-password-only");
         String jsonRequest = objectMapper.writeValueAsString(authRequest);
 
         mockMvc.perform(post("/auth/login")
@@ -62,14 +62,14 @@ public class AuthControllerIT {
                 .content(jsonRequest))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.accessToken").exists())
-                .andExpect(jsonPath("$.username").value("albertovilar1@gmail.com"))
+                .andExpect(jsonPath("$.username").value("admin@fastshop.test"))
                 .andExpect(jsonPath("$.expiresIn").isNumber());
     }
 
     @Test
     @DisplayName("login_withInvalidPassword_shouldReturn401Unauthorized")
     void login_withInvalidPassword_shouldReturn401Unauthorized() throws Exception {
-        AuthRequestDTO authRequest = new AuthRequestDTO("albertovilar1@gmail.com", "senha-invalida");
+        AuthRequestDTO authRequest = new AuthRequestDTO("admin@fastshop.test", "senha-invalida");
         String jsonRequest = objectMapper.writeValueAsString(authRequest);
 
         mockMvc.perform(post("/auth/login")
