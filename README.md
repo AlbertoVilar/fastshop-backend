@@ -67,7 +67,7 @@ Compose highlights:
 - Authentication
   - `POST /auth/login` — example body:
     ```json
-    {"username":"albertovilar1@gmail.com","password":"132747"}
+    {"username":"<admin_username>","password":"<admin_password>"}
     ```
     - Response: `200 OK` with `accessToken` (JWT). Use `Authorization: Bearer <token>` for protected requests.
 - Users (`/users`)
@@ -129,7 +129,7 @@ Example `404` response (nonexistent item):
   ```bash
   curl -sS -X POST "http://localhost:8080/auth/login" \
     -H "Content-Type: application/json" \
-    -d '{"username":"albertovilar1@gmail.com","password":"132747"}'
+    -d '{"username":"<admin_username>","password":"<admin_password>"}'
   ```
 
 - Get authenticated user data (`/users/me`):
@@ -212,11 +212,9 @@ Example `404` response (nonexistent item):
 
 Defaults suitable for local dev are provided in `compose.yml`.
 
-## Admin Credentials (local)
-- User: `albertovilar1@gmail.com`
-- Password: `132747`
-- Control envs: `RESET_ADMIN_PASSWORD=true`, plus `RESET_ADMIN_USERNAME` and `RESET_ADMIN_PLAIN_PASSWORD`.
-Use only locally. Disable reset and rotate credentials in production.
+## Local access
+
+No account credentials are committed. To test authenticated endpoints, create a local user and keep its credentials only in your local environment (for example, in Postman environment variables). Do not use real or reused credentials in documentation, collections, or Compose files.
 
 ## Local Development (without Docker)
 - Run with Maven (Windows): `mvnw.cmd spring-boot:run`
