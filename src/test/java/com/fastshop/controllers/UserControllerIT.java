@@ -48,7 +48,7 @@ public class UserControllerIT {
     @DisplayName("GET /users - Deve retornar 200 e lista de usuários para ADMIN")
     void findAll_shouldReturnListOfUsers_whenAdmin() throws Exception {
         // Obter token válido de ADMIN via /auth/login
-        String token = obtainAccessToken("albertovilar1@gmail.com", "132747");
+        String token = obtainAccessToken("admin@fastshop.test", "test-password-only");
         ResultActions result = mockMvc.perform(get("/users")
                 .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON));
